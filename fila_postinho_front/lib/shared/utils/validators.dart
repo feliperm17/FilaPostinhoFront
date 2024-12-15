@@ -37,12 +37,12 @@ class Validators {
       return 'A senha deve ter no mínimo 8 caracteres';
     }
 
-    if (!value.contains(RegExp(r'[A-Z]'))) {
-      return 'A senha deve conter pelo menos uma letra maiúscula';
+    if (!RegExp(r'^[A-Z][a-z]+.*$').hasMatch(value)) {
+      return 'A senha deve começar com letra maiúscula';
     }
 
-    if (!value.contains(RegExp(r'[a-z]'))) {
-      return 'A senha deve conter pelo menos uma letra minúscula';
+    if (RegExp(r'[A-Z]').allMatches(value).length > 1) {
+      return 'Apenas a primeira letra deve ser maiúscula';
     }
 
     if (!value.contains(RegExp(r'[0-9]'))) {
@@ -84,6 +84,24 @@ class Validators {
       return 'CPF inválido';
     }
 
+    // Lista de CPFs conhecidos como inválidos
+    final invalidCPFs = [
+      '00000000000',
+      '11111111111',
+      '22222222222',
+      '33333333333',
+      '44444444444',
+      '55555555555',
+      '66666666666',
+      '77777777777',
+      '88888888888',
+      '99999999999'
+    ];
+
+    if (invalidCPFs.contains(cpf)) {
+      return 'CPF inválido';
+    }
+
     // Calcula os dígitos verificadores
     List<int> numbers = cpf.split('').map(int.parse).toList();
 
@@ -92,8 +110,8 @@ class Validators {
     for (int i = 0; i < 9; i++) {
       soma += numbers[i] * (10 - i);
     }
-    int digito1 = 11 - (soma % 11);
-    if (digito1 > 9) digito1 = 0;
+    int resto = soma % 11;
+    int digito1 = resto < 2 ? 0 : 11 - resto;
 
     if (numbers[9] != digito1) {
       return 'CPF inválido';
@@ -104,11 +122,20 @@ class Validators {
     for (int i = 0; i < 10; i++) {
       soma += numbers[i] * (11 - i);
     }
-    int digito2 = 11 - (soma % 11);
-    if (digito2 > 9) digito2 = 0;
+    resto = soma % 11;
+    int digito2 = resto < 2 ? 0 : 11 - resto;
 
     if (numbers[10] != digito2) {
       return 'CPF inválido';
+    }
+
+    // Verifica se o CPF está na blacklist (opcional)
+    final blacklistedCPFs = [
+      '12345678909', // Exemplo de CPF na blacklist
+    ];
+
+    if (blacklistedCPFs.contains(cpf)) {
+      return 'CPF inválido ou bloqueado';
     }
 
     return null;
