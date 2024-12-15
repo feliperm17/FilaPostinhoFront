@@ -40,23 +40,4 @@ class AuthService {
       };
     }
   }
-
-  Future<Map<String, dynamic>> resetPassword(String email) async {
-    try {
-      final response = await http.post(
-        Uri.parse(ApiConfig.baseUrl + ApiConfig.resetPassword),
-        headers: ApiConfig.headers,
-        body: jsonEncode({
-          'email': email,
-        }),
-      );
-
-      return jsonDecode(response.body);
-    } catch (e) {
-      return {
-        'success': false,
-        'message': 'Erro ao conectar com o servidor: ${e.toString()}'
-      };
-    }
-  }
 }

@@ -158,6 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Icons.lock,
                         obscureText: true,
                         validator: Validators.validatePassword,
+                        showPasswordRules: true,
                         onChanged: (value) {
                           setState(() {}); // Para atualizar o indicador
                         },
@@ -175,6 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           value,
                           _passwordController.text,
                         ),
+                        showConfirmPasswordRules: true,
                         onChanged: (value) {
                           setState(() {}); // Para atualizar o indicador
                         },
@@ -425,6 +427,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool obscureText = false,
     String? Function(String?)? validator,
     Function(String)? onChanged,
+    bool showPasswordRules = false,
+    bool showConfirmPasswordRules = false,
   }) {
     return CustomTextField(
       label: label,
@@ -435,6 +439,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       inputFormatters: mask,
       obscureText: obscureText,
       onChanged: onChanged,
+      showPasswordRules: showPasswordRules,
+      showConfirmPasswordRules: showConfirmPasswordRules,
     );
   }
 

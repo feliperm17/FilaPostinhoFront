@@ -8,7 +8,6 @@ import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
 import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
 import 'package:fila_postinho_front/features/auth/services/auth_storage_service.dart';
-import 'package:fila_postinho_front/features/auth/screens/reset_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -134,23 +133,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const Text('Lembrar-me'),
                             const Spacer(),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ResetPasswordScreen(
-                                      toggleTheme: widget.toggleTheme,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                'Esqueceu a senha?',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                         const SizedBox(height: 24),
