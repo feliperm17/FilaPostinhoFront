@@ -1,8 +1,9 @@
+import 'package:fila_postinho_front/features/auth/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
 import 'package:fila_postinho_front/shared/widgets/custom_button.dart';
 import 'package:fila_postinho_front/shared/widgets/custom_text_field.dart';
-import 'package:fila_postinho_front/shared/utils/validators.dart';
+import 'package:fila_postinho_front/shared/utils/current_user.dart';
 import 'package:fila_postinho_front/features/auth/screens/register_screen.dart';
 import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
 import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
@@ -106,7 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: CustomTextField(
                             label: 'E-mail',
                             controller: _emailController,
-                            validator: Validators.validateEmail,
                             keyboardType: TextInputType.emailAddress,
                             prefixIcon: Icons.email,
                           ),
@@ -115,7 +115,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         CustomTextField(
                           label: 'Senha',
                           controller: _passwordController,
-                          validator: Validators.validatePassword,
                           obscureText: true,
                           prefixIcon: Icons.lock,
                         ),
@@ -241,7 +240,11 @@ class _LoginScreenState extends State<LoginScreen> {
               'Você foi autenticado com sucesso.',
               true,
             );
-            // Navegar para a próxima tela após login
+            currentUser = UserModel.fromJson(response['user']);
+            setState(() {
+              _isLoading.value = false;
+            });
+            Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => true);
           } else {
             String errorMessage = 'Erro ao realizar login';
             if (response['message'] != null) {
