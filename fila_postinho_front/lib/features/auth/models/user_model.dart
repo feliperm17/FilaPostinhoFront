@@ -1,37 +1,19 @@
 class UserModel {
-  final String id;
+  final int? id;
   final String name;
   final String cpf;
   final String email;
-  final String password;
-  final String cep;
-  final String street;
-  final String city;
-  final String neighborhood;
-  final String state;
-  final String phone;
-  final String birthDate;
-  final String country;
   final String number;
-  final String? complement;
+  final String password;
   final bool isAdmin;
 
   UserModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.cpf,
     required this.email,
-    required this.password,
-    required this.cep,
-    required this.street,
-    required this.city,
-    required this.neighborhood,
-    required this.state,
-    required this.phone,
-    required this.birthDate,
-    required this.country,
     required this.number,
-    this.complement,
+    this.password = '',
     this.isAdmin = false,
   });
 
@@ -40,39 +22,19 @@ class UserModel {
       'username': name,
       'cpf': cpf,
       'email': email,
+      'phone_nr': number,
       'password': password,
-      'cep': cep,
-      'street': street,
-      'city': city,
-      'neighborhood': neighborhood,
-      'state': state,
-      'phone_nr': phone,
-      'birthDate': birthDate,
-      'country': country,
-      'number': number,
-      'complement': complement,
-      'isAdmin': isAdmin,
     };
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'],
-      name: json['name'],
+      name: json['username'],
       cpf: json['cpf'],
       email: json['email'],
-      password: json['password'],
-      cep: json['cep'],
-      street: json['street'],
-      city: json['city'],
-      neighborhood: json['neighborhood'],
-      state: json['state'],
-      phone: json['phone'],
-      birthDate: json['birthDate'],
-      country: json['country'],
-      number: json['number'],
-      complement: json['complement'],
-      isAdmin: json['isAdmin'] ?? false,
+      number: json['phone_nr'],
+      isAdmin: json['account_st'] == '1',
     );
   }
 }
