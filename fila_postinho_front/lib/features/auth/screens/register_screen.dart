@@ -230,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => LoginScreen(
+                              builder: (context) => RegisterScreen(
                                 toggleTheme: widget.toggleTheme,
                               ),
                             ),
@@ -263,6 +263,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       try {
         final user = UserModel(
+          id: UniqueKey().toString(),
           name: _nameController.text,
           cpf: _cpfController.text,
           email: _emailController.text,
@@ -279,41 +280,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
           complement: _complementController.text,
         );
 
-        final response = await _authService.register(user);
+        await _authService.register(user);
 
         if (mounted) {
-          if (response['success'] == true) {
-            _showSnackBar(
-              'Cadastro Realizado!',
-              'Seu cadastro foi realizado com sucesso. Você já pode fazer login.',
-              true,
-            );
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => LoginScreen(
-                  toggleTheme: widget.toggleTheme,
-                ),
+          _showSnackBar(
+            'Cadastro Realizado!',
+            'Seu cadastro foi realizado com sucesso. Você já pode fazer login.',
+            true,
+          );
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => LoginScreen(
+                toggleTheme: widget.toggleTheme,
               ),
-            );
-          } else {
-            String errorMessage = 'Erro ao realizar cadastro';
-            if (response['message'] != null) {
-              switch (response['message']) {
-                case 'email_already_exists':
-                  errorMessage = 'Este e-mail já está cadastrado';
-                  break;
-                case 'cpf_already_exists':
-                  errorMessage = 'Este CPF já está cadastrado';
-                  break;
-                case 'invalid_data':
-                  errorMessage = 'Dados inválidos. Verifique as informações';
-                  break;
-                default:
-                  errorMessage = response['message'];
-              }
-            }
-            _showSnackBar('Erro no Cadastro', errorMessage, false);
-          }
+            ),
+          );
         }
       } catch (e) {
         if (mounted) {
