@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fila_postinho_front/shared/utils/current_user.dart';
 import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
 import 'package:fila_postinho_front/features/auth/models/user_model.dart';
@@ -11,8 +12,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserModel? currentUser = _authService.getCurrentUser();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Perfil'),
@@ -33,15 +32,15 @@ class ProfileScreen extends StatelessWidget {
               Text('Informações do Usuário', style: TextStyle(fontSize: 24)),
               SizedBox(height: 20),
               if (currentUser != null) ...[
-                Text('Nome: ${currentUser.name}'),
+                Text('Nome: ${currentUser?.name}'),
                 SizedBox(height: 10),
-                Text('E-mail: ${currentUser.email}'),
+                Text('E-mail: ${currentUser?.email}'),
                 SizedBox(height: 10),
-                Text('Telefone: ${currentUser.phone}'),
+                Text('Telefone: ${currentUser?.number}'),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    _showEditDialog(context, currentUser);
+                    _showEditDialog(context, currentUser!);
                   },
                   child: Text('Editar Informações'),
                 ),
@@ -59,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Text('Logout'),
               ),
               SizedBox(height: 20),
-              if (currentUser != null && currentUser.isAdmin)
+              if (currentUser != null && currentUser!.isAdmin)
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed('/manage_specialties');
@@ -79,7 +78,7 @@ class ProfileScreen extends StatelessWidget {
     final TextEditingController emailController =
         TextEditingController(text: user.email);
     final TextEditingController phoneController =
-        TextEditingController(text: user.phone);
+        TextEditingController(text: user.number);
 
     showDialog(
       context: context,
@@ -112,17 +111,7 @@ class ProfileScreen extends StatelessWidget {
                   name: nameController.text,
                   cpf: user.cpf,
                   email: emailController.text,
-                  password: user.password,
-                  cep: user.cep,
-                  street: user.street,
-                  city: user.city,
-                  neighborhood: user.neighborhood,
-                  state: user.state,
-                  phone: phoneController.text,
-                  birthDate: user.birthDate,
-                  country: user.country,
                   number: user.number,
-                  complement: user.complement,
                   isAdmin: user.isAdmin,
                 );
 

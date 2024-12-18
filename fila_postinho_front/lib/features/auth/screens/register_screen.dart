@@ -261,21 +261,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       try {
         final user = UserModel(
-          id: UniqueKey().toString(),
           name: _nameController.text,
           cpf: _cpfController.text,
           email: _emailController.text,
           password: _passwordController.text,
-          cep: _cepController.text,
-          street: _streetController.text,
-          city: _cityController.text,
-          neighborhood: _neighborhoodController.text,
-          state: _stateController.text,
-          phone: _phoneController.text,
-          birthDate: _birthDateController.text,
-          country: _countryController.text,
           number: _numberController.text,
-          complement: _complementController.text,
         );
 
         await _authService.register(user);
