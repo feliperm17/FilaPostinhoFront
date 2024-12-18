@@ -33,7 +33,7 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'username': name,
       'cpf': cpf,
       'email': email,
       'password': password,
@@ -42,7 +42,7 @@ class UserModel {
       'city': city,
       'neighborhood': neighborhood,
       'state': state,
-      'phone': phone,
+      'phone_nr': phone,
       'birthDate': birthDate,
       'country': country,
       'number': number,

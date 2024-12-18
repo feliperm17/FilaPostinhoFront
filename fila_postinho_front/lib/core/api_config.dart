@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'http://localhost:3000';
   static const String register = '/auth/register';
   static const String login = '/auth/login';
   static const String resetPassword = '/auth/reset-password';
