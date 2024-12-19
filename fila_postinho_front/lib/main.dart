@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/home_page.dart';
+import 'features/auth/screens/admin_home_page.dart';
 import 'features/auth/screens/profile_screen.dart';
-import 'features/auth/screens/specialty_management_screen.dart';
 import 'features/auth/screens/queue_management_screen.dart';
 import 'core/theme/colors.dart';
 
@@ -55,8 +55,7 @@ class MyAppState extends State<MyApp> {
         '/login': (context) => LoginScreen(toggleTheme: _toggleTheme),
         '/home': (context) => HomePage(toggleTheme: _toggleTheme),
         '/profile': (context) => ProfileScreen(toggleTheme: _toggleTheme),
-        '/manage_specialties': (context) =>
-            SpecialtyManagementScreen(toggleTheme: _toggleTheme),
+        '/admin/home': (context) => AdminHome(toggleTheme: _toggleTheme),
         '/manage_queue': (context) =>
             QueueManagementScreen(toggleTheme: _toggleTheme),
       },

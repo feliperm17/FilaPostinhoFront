@@ -4,6 +4,7 @@ import 'package:fila_postinho_front/core/theme/colors.dart';
 import 'package:fila_postinho_front/shared/widgets/custom_button.dart';
 import 'package:fila_postinho_front/shared/widgets/custom_text_field.dart';
 import 'package:fila_postinho_front/shared/utils/current_user.dart';
+import 'package:fila_postinho_front/shared/utils/jwt_token.dart';
 import 'package:fila_postinho_front/features/auth/screens/register_screen.dart';
 import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
 import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
@@ -240,11 +241,18 @@ class _LoginScreenState extends State<LoginScreen> {
               'Você foi autenticado com sucesso.',
               true,
             );
+            jwtToken = response['token'];
             currentUser = UserModel.fromJson(response['user']);
             setState(() {
               _isLoading.value = false;
             });
-            Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => true);
+            if (currentUser!.isAdmin == false) {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/home', (_) => true);
+            } else {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/admin/home', (_) => true);
+            }
           } else {
             String errorMessage = 'Erro ao realizar login';
             if (response['message'] != null) {
