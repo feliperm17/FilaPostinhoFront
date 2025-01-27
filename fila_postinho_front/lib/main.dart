@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'features/auth/screens/login_screen.dart';
-import 'features/auth/screens/home_page.dart';
-import 'features/auth/screens/profile_screen.dart';
-import 'features/auth/screens/specialty_management_screen.dart';
-import 'features/auth/screens/queue_management_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/home_page.dart';
+import 'screens/profile_screen.dart';
+import 'screens/specialty/specialty_management_screen.dart';
+import 'screens/queue/queue_management_screen.dart';
 import 'core/theme/colors.dart';
 
 void main() {

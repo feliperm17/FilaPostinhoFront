@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 
 class QueueManagementScreen extends StatefulWidget {
   final VoidCallback toggleTheme;

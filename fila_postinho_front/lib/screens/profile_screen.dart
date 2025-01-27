@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fila_postinho_front/shared/utils/current_user.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
-import 'package:fila_postinho_front/features/auth/models/user_model.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/services/auth_service.dart';
+import 'package:fila_postinho_front/models/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
   final AuthService _authService = AuthService();

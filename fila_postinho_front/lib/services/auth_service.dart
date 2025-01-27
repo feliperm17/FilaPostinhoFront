@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fila_postinho_front/core/api_config.dart';
-import 'package:fila_postinho_front/features/auth/models/user_model.dart';
+import 'package:fila_postinho_front/models/user_model.dart';
 
 class AuthService {
   UserModel? currentUser;

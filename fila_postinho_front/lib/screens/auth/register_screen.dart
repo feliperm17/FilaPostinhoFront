@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
-import 'package:fila_postinho_front/shared/widgets/custom_button.dart';
-import 'package:fila_postinho_front/shared/widgets/custom_text_field.dart';
+import 'package:fila_postinho_front/widgets/custom_button.dart';
+import 'package:fila_postinho_front/widgets/custom_text_field.dart';
 import 'package:fila_postinho_front/shared/utils/validators.dart';
-import 'package:fila_postinho_front/features/auth/models/user_model.dart';
-import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
-import 'package:fila_postinho_front/features/auth/screens/login_screen.dart';
+import 'package:fila_postinho_front/models/user_model.dart';
+import 'package:fila_postinho_front/services/auth_service.dart';
+import 'package:fila_postinho_front/screens/auth/login_screen.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:fila_postinho_front/features/auth/services/cep_service.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
+import 'package:fila_postinho_front/services/cep_service.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/widgets/background_gradient.dart';
 import 'package:fila_postinho_front/core/constants/responsive_breakpoints.dart';
-import 'package:fila_postinho_front/shared/widgets/responsive_container.dart';
+import 'package:fila_postinho_front/widgets/responsive_container.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VoidCallback toggleTheme;

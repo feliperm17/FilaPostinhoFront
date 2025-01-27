@@ -1,14 +1,14 @@
-import 'package:fila_postinho_front/features/auth/models/user_model.dart';
+import 'package:fila_postinho_front/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
-import 'package:fila_postinho_front/shared/widgets/custom_button.dart';
-import 'package:fila_postinho_front/shared/widgets/custom_text_field.dart';
+import 'package:fila_postinho_front/widgets/custom_button.dart';
+import 'package:fila_postinho_front/widgets/custom_text_field.dart';
 import 'package:fila_postinho_front/shared/utils/current_user.dart';
-import 'package:fila_postinho_front/features/auth/screens/register_screen.dart';
-import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
-import 'package:fila_postinho_front/features/auth/services/auth_storage_service.dart';
+import 'package:fila_postinho_front/screens/auth/register_screen.dart';
+import 'package:fila_postinho_front/services/auth_service.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/widgets/background_gradient.dart';
+import 'package:fila_postinho_front/services/auth_storage_service.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback toggleTheme;

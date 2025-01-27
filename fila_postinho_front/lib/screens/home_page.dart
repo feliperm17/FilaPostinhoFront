@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fila_postinho_front/features/auth/screens/profile_screen.dart';
+import 'package:fila_postinho_front/screens/profile_screen.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/widgets/background_gradient.dart';
 
 class HomePage extends StatelessWidget {
   final VoidCallback toggleTheme;
