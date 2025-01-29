@@ -4,6 +4,7 @@ import 'screens/home_page.dart';
 import 'screens/profile_screen.dart';
 import 'screens/specialty/specialty_management_screen.dart';
 import 'screens/queue/queue_management_screen.dart';
+import 'features/auth/screens/admin_home_page.dart';
 import 'core/theme/colors.dart';
 
 void main() {
@@ -55,8 +56,7 @@ class MyAppState extends State<MyApp> {
         '/login': (context) => LoginScreen(toggleTheme: _toggleTheme),
         '/home': (context) => HomePage(toggleTheme: _toggleTheme),
         '/profile': (context) => ProfileScreen(toggleTheme: _toggleTheme),
-        '/manage_specialties': (context) =>
-            SpecialtyManagementScreen(toggleTheme: _toggleTheme),
+        '/admin/home': (context) => AdminHome(toggleTheme: _toggleTheme),
         '/manage_queue': (context) =>
             QueueManagementScreen(toggleTheme: _toggleTheme),
       },

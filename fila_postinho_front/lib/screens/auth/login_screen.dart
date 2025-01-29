@@ -9,6 +9,7 @@ import 'package:fila_postinho_front/services/auth_service.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/widgets/background_gradient.dart';
 import 'package:fila_postinho_front/services/auth_storage_service.dart';
+import '../../utils/jwt_token.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -244,7 +245,13 @@ class _LoginScreenState extends State<LoginScreen> {
             setState(() {
               _isLoading.value = false;
             });
-            Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => true);
+            if (currentUser!.isAdmin == false) {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/home', (_) => true);
+            } else {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/admin/home', (_) => true);
+            }
           } else {
             String errorMessage = 'Erro ao realizar login';
             if (response['message'] != null) {
