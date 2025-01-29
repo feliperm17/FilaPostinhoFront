@@ -1,8 +1,10 @@
+import 'package:fila_postinho_front/models/user_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fila_postinho_front/shared/utils/current_user.dart';
+import '../utils/current_user.dart';
+//import 'package:fila_postinho_front/shared/utils/current_user.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/services/auth_service.dart';
-import 'package:fila_postinho_front/models/user_model.dart';
+//import 'package:fila_postinho_front/models/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
   final AuthService _authService = AuthService();
@@ -72,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, UserModel user) {
+  void _showEditDialog(BuildContext context, User user) {
     final TextEditingController nameController =
         TextEditingController(text: user.name);
     final TextEditingController emailController =
@@ -106,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 // Atualiza os dados do usuário no backend
-                UserModel updatedUser = UserModel(
+                User updatedUser = User(
                   id: user.id,
                   name: nameController.text,
                   cpf: user.cpf,

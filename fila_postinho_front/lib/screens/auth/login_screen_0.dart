@@ -1,10 +1,12 @@
+//import 'package:fila_postinho_front/models/user_model.dart';
 import 'package:fila_postinho_front/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
 import 'package:fila_postinho_front/widgets/custom_button.dart';
 import 'package:fila_postinho_front/widgets/custom_text_field.dart';
-import 'package:fila_postinho_front/shared/utils/current_user.dart';
-import 'package:fila_postinho_front/screens/auth/register_screen.dart';
+import '../../utils/current_user.dart';
+//import 'package:fila_postinho_front/shared/utils/current_user.dart';
+import 'package:fila_postinho_front/screens/auth/register_screen_0.dart';
 import 'package:fila_postinho_front/services/auth_service.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/widgets/background_gradient.dart';
@@ -240,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
               'Você foi autenticado com sucesso.',
               true,
             );
-            currentUser = UserModel.fromJson(response['user']);
+            currentUser = User.fromJson(response['user']);
             setState(() {
               _isLoading.value = false;
             });
