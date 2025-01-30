@@ -1,4 +1,4 @@
-class UserModel {
+class User {
   final int? id;
   final String name;
   final String cpf;
@@ -7,7 +7,7 @@ class UserModel {
   final String password;
   final bool isAdmin;
 
-  UserModel({
+  User({
     this.id,
     required this.name,
     required this.cpf,
@@ -27,8 +27,8 @@ class UserModel {
     };
   }
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
       id: json['id'],
       name: json['username'],
       cpf: json['cpf'],

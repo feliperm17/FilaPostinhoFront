@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:fila_postinho_front/features/auth/screens/profile_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:fila_postinho_front/screens/auth/profile_screen.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/widgets/background_gradient.dart';
+import '../screens/specialty/specialty_list_screen.dart';
+import '../services/queue_services.dart'; // Import QueueService
+import '../models/queue_model.dart'; // Import Queue model
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final VoidCallback toggleTheme;
-  final List<String> queue = []; // Lista para armazenar os pacientes
 
-  HomePage({super.key, required this.toggleTheme});
+  const HomePage({super.key, required this.toggleTheme});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Queue> queues = []; // List to store queues fetched from the backend
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchQueues(); // Fetch queues when the widget is initialized
+  }
+
+  // Fetch queues from the backend
+  Future<void> _fetchQueues() async {
+    final queueService = Provider.of<QueueService>(context, listen: false);
+    try {
+      final fetchedQueues = await queueService.findAll();
+      setState(() {
+        queues = fetchedQueues;
+      });
+    } catch (e) {
+      _showSnackBar(context, 'Failed to load queues: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +52,13 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(toggleTheme: toggleTheme),
+                  builder: (context) => ProfileScreen(toggleTheme: widget.toggleTheme),
                 ),
               );
             },
           ),
           ThemeToggleButton(
-            onPressed: toggleTheme,
+            onPressed: widget.toggleTheme,
             isDark: isDark,
           ),
         ],
@@ -50,7 +79,14 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _showSpecialtyDialog(context);
+                  // Navigate directly to SpecialtyListScreen
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SpecialtyListScreen(
+                        toggleTheme: widget.toggleTheme,
+                      ),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.background,
@@ -82,33 +118,28 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Entrar na Fila',
-                    style: TextStyle(fontSize: 18)),
+                child: const Text('Entrar na Fila', style: TextStyle(fontSize: 18)),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: queues.length,
+                  itemBuilder: (context, index) {
+                    final queue = queues[index];
+                    return ListTile(
+                      title: Text('Queue ID: ${queue.queueId}'),
+                      subtitle: Text('Specialty: ${queue.specialty}'),
+                      onTap: () {
+                        // Navigate to queue detail screen
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  void _showSpecialtyDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Escolha uma Especialidade'),
-          content: const Text('As especialidades serão carregadas em breve.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Fechar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -129,11 +160,24 @@ class HomePage extends StatelessWidget {
           actions: <Widget>[
             TextButton(
               child: const Text('Adicionar'),
-              onPressed: () {
+              onPressed: () async {
                 if (patientController.text.isNotEmpty) {
-                  queue.add(patientController.text);
-                  Navigator.of(context).pop();
-                  _showSnackBar(context, 'Paciente adicionado à fila!');
+                  final queueService = Provider.of<QueueService>(context, listen: false);
+                  try {
+                    // Create a new queue entry
+                    final newQueue = Queue(
+                      specialty: 1, // Replace with actual specialty ID
+                      queueDt: DateTime.now(),
+                      positionNr: queues.length + 1, // Next position in the queue
+                      queueSize: queues.length + 1, // Update queue size
+                    );
+                    await queueService.create(newQueue);
+                    _fetchQueues(); // Refresh the queue list
+                    Navigator.of(context).pop();
+                    _showSnackBar(context, 'Paciente adicionado à fila!');
+                  } catch (e) {
+                    _showSnackBar(context, 'Failed to add patient: $e');
+                  }
                 } else {
                   _showSnackBar(context, 'Por favor, insira um nome.');
                 }
