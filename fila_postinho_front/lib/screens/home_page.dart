@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fila_postinho_front/screens/profile_screen.dart';
+import 'package:fila_postinho_front/screens/auth/profile_screen.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/widgets/background_gradient.dart';

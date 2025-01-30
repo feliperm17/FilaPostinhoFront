@@ -1,6 +1,6 @@
 import 'package:fila_postinho_front/models/user_model.dart';
 import 'package:flutter/material.dart';
-import '../utils/current_user.dart';
+import '../../utils/current_user.dart';
 //import 'package:fila_postinho_front/shared/utils/current_user.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/services/auth_service.dart';

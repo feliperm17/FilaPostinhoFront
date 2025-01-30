@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_page.dart';
-import 'screens/profile_screen.dart';
+import 'screens/auth/profile_screen.dart';
 import 'screens/specialty/specialty_management_screen.dart';
 import 'screens/queue/queue_management_screen.dart';
-import 'features/auth/screens/admin_home_page.dart';
+import 'screens/auth/admin_home_page.dart';
 import 'core/theme/colors.dart';
 
 void main() {

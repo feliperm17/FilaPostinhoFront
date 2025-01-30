@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fila_postinho_front/features/auth/screens/profile_screen.dart';
+import '../auth/profile_screen.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
+import '../../widgets/theme_toggle_button.dart';
+import '../../widgets/background_gradient.dart';
 
 class AdminHome extends StatelessWidget {
   final VoidCallback toggleTheme;
 
-  AdminHome({super.key, required this.toggleTheme});
+  const AdminHome({super.key, required this.toggleTheme});
 
   @override
   Widget build(BuildContext context) {
