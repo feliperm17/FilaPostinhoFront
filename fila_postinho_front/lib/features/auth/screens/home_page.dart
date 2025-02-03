@@ -3,10 +3,14 @@ import 'package:fila_postinho_front/features/auth/screens/profile_screen.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
 import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
+import 'package:fila_postinho_front/features/auth/screens/queue_info_screen.dart';
+import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
+import 'package:fila_postinho_front/features/auth/models/user_model.dart';
 
 class HomePage extends StatelessWidget {
   final VoidCallback toggleTheme;
   final List<String> queue = []; // Lista para armazenar os pacientes
+  final AuthService _authService = AuthService();
 
   HomePage({super.key, required this.toggleTheme});
 
@@ -40,7 +44,15 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Bem-vindo à Fila Postinho!',
+                'Bem-vindo',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text,
+                ),
+              ),
+              const Text(
+                'a Unidade Básica de Saúde!',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -113,45 +125,33 @@ class HomePage extends StatelessWidget {
   }
 
   void _enterQueue(BuildContext context) {
-    final TextEditingController patientController = TextEditingController();
+    // Obtém o usuário logado
+    UserModel? currentUser = _authService.getCurrentUser();
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Entrar na Fila'),
-          content: TextField(
-            controller: patientController,
-            decoration: const InputDecoration(
-              labelText: 'Nome do Paciente',
-            ),
+    // Verifica se o usuário está logado
+    if (currentUser != null) {
+      String patientName = currentUser.name; // Pega o nome do usuário logado
+      int currentTicket = 657; // Exemplo, pegue do sistema
+      int estimatedTime = 10; // Exemplo, pegue do sistema
+
+      // Redireciona para a tela de informações da fila
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => QueueInfoScreen(
+            patientName: patientName,
+            currentTicket: currentTicket,
+            estimatedTime: estimatedTime,
+            toggleTheme: toggleTheme,
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Adicionar'),
-              onPressed: () {
-                if (patientController.text.isNotEmpty) {
-                  queue.add(patientController.text);
-                  Navigator.of(context).pop();
-                  _showSnackBar(context, 'Paciente adicionado à fila!');
-                } else {
-                  _showSnackBar(context, 'Por favor, insira um nome.');
-                }
-              },
-            ),
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+        ),
+      );
+    } else {
+      // Trate o caso em que não há usuário logado
+      _showSnackBar(context, 'Usuário não está logado.', false);
+    }
   }
 
-  void _showSnackBar(BuildContext context, String message) {
+  void _showSnackBar(BuildContext context, String message, bool isSuccess) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
