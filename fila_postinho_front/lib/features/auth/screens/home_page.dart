@@ -4,13 +4,10 @@ import 'package:fila_postinho_front/core/theme/colors.dart';
 import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
 import 'package:fila_postinho_front/features/auth/screens/queue_info_screen.dart';
-import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
-import 'package:fila_postinho_front/features/auth/models/user_model.dart';
 
 class HomePage extends StatelessWidget {
   final VoidCallback toggleTheme;
   final List<String> queue = []; // Lista para armazenar os pacientes
-  final AuthService _authService = AuthService();
 
   HomePage({super.key, required this.toggleTheme});
 
@@ -125,36 +122,20 @@ class HomePage extends StatelessWidget {
   }
 
   void _enterQueue(BuildContext context) {
-    // Obtém o usuário logado
-    UserModel? currentUser = _authService.getCurrentUser();
+    // Aqui você pode obter o nome do paciente do usuário logado
+    String patientName =
+        "Nome do Paciente"; // Substitua pelo nome real do paciente
+    int currentTicket = 1; // Defina a lógica para obter o ticket atual
+    int estimatedTime = 10; // Defina a lógica para calcular o tempo estimado
 
-    // Verifica se o usuário está logado
-    if (currentUser != null) {
-      String patientName = currentUser.name; // Pega o nome do usuário logado
-      int currentTicket = 657; // Exemplo, pegue do sistema
-      int estimatedTime = 10; // Exemplo, pegue do sistema
-
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => QueueInfoScreen(
-            patientName: patientName,
-            currentTicket: currentTicket,
-            estimatedTime: estimatedTime,
-            toggleTheme: toggleTheme,
-          ),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => QueueInfoScreen(
+          patientName: patientName,
+          currentTicket: currentTicket,
+          estimatedTime: estimatedTime,
+          toggleTheme: toggleTheme,
         ),
-      );
-    } else {
-      // Trate o caso em que não há usuário logado
-      _showSnackBar(context, 'Usuário não está logado.', false);
-    }
-  }
-
-  void _showSnackBar(BuildContext context, String message, bool isSuccess) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
       ),
     );
   }
