@@ -134,7 +134,6 @@ class HomePage extends StatelessWidget {
       int currentTicket = 657; // Exemplo, pegue do sistema
       int estimatedTime = 10; // Exemplo, pegue do sistema
 
-      // Redireciona para a tela de informações da fila
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => QueueInfoScreen(
