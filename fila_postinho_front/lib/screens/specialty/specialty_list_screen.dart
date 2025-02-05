@@ -10,21 +10,27 @@ class SpecialtyListScreen extends StatelessWidget {
     required this.toggleTheme,
     super.key,
   });
+
   @override
   Widget build(BuildContext context) {
     final specialtyService = Provider.of<SpecialtyService>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Specialties')),
+      appBar: AppBar(title: const Text('Especialidades')),
       body: FutureBuilder<List<Specialty>>(
         future: specialtyService.findAll(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: Text('Carregando os dados do backend...'),
+            );
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text('Erro ao carregar especialidades: ${snapshot.error}'),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No specialties found'));
+            return const Center(
+                child: Text('Nenhuma especialidade encontrada'));
           } else {
             final specialties = snapshot.data!;
             return ListView.builder(
@@ -34,7 +40,7 @@ class SpecialtyListScreen extends StatelessWidget {
                 return ListTile(
                   title: Text(specialty.specialtyName),
                   onTap: () {
-                    // Navigate to specialty detail screen
+                    // Implementar navegação para a tela de detalhes
                   },
                 );
               },

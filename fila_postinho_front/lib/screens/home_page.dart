@@ -5,8 +5,10 @@ import 'package:fila_postinho_front/core/theme/colors.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/widgets/background_gradient.dart';
 import '../screens/specialty/specialty_list_screen.dart';
-import '../services/queue_services.dart'; // Import QueueService
-import '../models/queue_model.dart'; // Import Queue model
+import '../services/queue_services.dart';
+import '../models/queue_model.dart';
+import '../utils/current_user.dart';
+import '../screens/auth/queue_info_screen.dart';
 
 class HomePage extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -18,24 +20,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Queue> queues = []; // List to store queues fetched from the backend
+  List<Queue> queues = [];
+  final TextEditingController patientController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchQueues(); // Fetch queues when the widget is initialized
+    _fetchQueues();
   }
 
-  // Fetch queues from the backend
+  @override
+  void dispose() {
+    patientController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchQueues() async {
     final queueService = Provider.of<QueueService>(context, listen: false);
     try {
       final fetchedQueues = await queueService.findAll();
-      setState(() {
-        queues = fetchedQueues;
-      });
+      if (mounted) {
+        setState(() {
+          queues = fetchedQueues;
+        });
+      }
     } catch (e) {
-      _showSnackBar(context, 'Failed to load queues: $e');
+      if (mounted) {
+        _showSnackBar(context, 'Failed to load queues: $e');
+      }
     }
   }
 
@@ -88,7 +100,6 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Navigate directly to SpecialtyListScreen
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => SpecialtyListScreen(
@@ -108,8 +119,10 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Selecionar Especialidade',
-                    style: TextStyle(fontSize: 18)),
+                child: const Text(
+                  'Selecionar Especialidade',
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -127,8 +140,10 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Entrar na Fila',
-                    style: TextStyle(fontSize: 18)),
+                child: const Text(
+                  'Entrar na Fila',
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -154,60 +169,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _enterQueue(BuildContext context) {
-    // Aqui você pode obter o nome do paciente do usuário logado
-    String patientName =
-        "Nome do Paciente"; // Substitua pelo nome real do paciente
-    int currentTicket = 1; // Defina a lógica para obter o ticket atual
-    int estimatedTime = 10; // Defina a lógica para calcular o tempo estimado
+    String patientName = currentUser?.name ?? "Nome do Paciente";
+    int currentTicket = 1;
+    int estimatedTime = 10;
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Entrar na Fila'),
-          content: TextField(
-            controller: patientController,
-            decoration: const InputDecoration(
-              labelText: 'Nome do Paciente',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Adicionar'),
-              onPressed: () async {
-                if (patientController.text.isNotEmpty) {
-                  final queueService =
-                      Provider.of<QueueService>(context, listen: false);
-                  try {
-                    // Create a new queue entry
-                    final newQueue = Queue(
-                      specialty: 1, // Replace with actual specialty ID
-                      queueDt: DateTime.now(),
-                      positionNr:
-                          queues.length + 1, // Next position in the queue
-                      queueSize: queues.length + 1, // Update queue size
-                    );
-                    await queueService.create(newQueue);
-                    _fetchQueues(); // Refresh the queue list
-                    Navigator.of(context).pop();
-                    _showSnackBar(context, 'Paciente adicionado à fila!');
-                  } catch (e) {
-                    _showSnackBar(context, 'Failed to add patient: $e');
-                  }
-                } else {
-                  _showSnackBar(context, 'Por favor, insira um nome.');
-                }
-              },
-            ),
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => QueueInfoScreen(
+          patientName: patientName,
+          currentTicket: currentTicket,
+          estimatedTime: estimatedTime,
+          toggleTheme: widget.toggleTheme,
+        ),
+      ),
     );
   }
 

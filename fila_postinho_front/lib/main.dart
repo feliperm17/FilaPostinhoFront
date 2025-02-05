@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_page.dart';
 import 'screens/auth/profile_screen.dart';
@@ -6,9 +7,20 @@ import 'screens/specialty/specialty_management_screen.dart';
 import 'screens/queue/queue_management_screen.dart';
 import 'screens/auth/admin_home_page.dart';
 import 'core/theme/colors.dart';
+import 'services/specialty_service.dart';
+import 'services/api_service.dart';
 
 void main() {
-  runApp(const MyApp());
+  final apiService = ApiService('http://localhost:3000');
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SpecialtyService(apiService)),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -59,6 +71,8 @@ class MyAppState extends State<MyApp> {
         '/admin/home': (context) => AdminHome(toggleTheme: _toggleTheme),
         '/manage_queue': (context) =>
             QueueManagementScreen(toggleTheme: _toggleTheme),
+        '/manage_specialties': (context) =>
+            SpecialtyManagementScreen(toggleTheme: _toggleTheme),
       },
     );
   }

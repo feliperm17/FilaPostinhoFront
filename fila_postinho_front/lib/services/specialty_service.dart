@@ -1,9 +1,9 @@
-//import 'package:http/http.dart' as http;
-import '../models/specialty_model.dart';
 import 'dart:convert';
+import '../models/specialty_model.dart';
 import 'api_service.dart';
+import 'package:flutter/material.dart';
 
-class SpecialtyService {
+class SpecialtyService extends ChangeNotifier {
   final ApiService apiService;
 
   SpecialtyService(this.apiService);
@@ -18,12 +18,17 @@ class SpecialtyService {
   }
 
   Future<List<Specialty>> findAll() async {
-    final response = await apiService.get('specialties');
-    if (response.statusCode == 200) {
-      List<dynamic> specialtiesJson = jsonDecode(response.body);
-      return specialtiesJson.map((json) => Specialty.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load specialties');
+    try {
+      final response = await apiService.get('specialties');
+      if (response.statusCode == 200) {
+        List<dynamic> specialtiesJson = jsonDecode(response.body);
+        return specialtiesJson.map((json) => Specialty.fromJson(json)).toList();
+      } else {
+        throw Exception(
+            'Erro ${response.statusCode}: Falha ao carregar especialidades.');
+      }
+    } catch (e) {
+      throw Exception('Erro de conexão: $e');
     }
   }
 
@@ -37,7 +42,8 @@ class SpecialtyService {
   }
 
   Future<Specialty> update(String id, Specialty specialty) async {
-    final response = await apiService.put('specialties/$id', specialty.toJson());
+    final response =
+        await apiService.put('specialties/$id', specialty.toJson());
     if (response.statusCode == 200) {
       return Specialty.fromJson(jsonDecode(response.body));
     } else {
