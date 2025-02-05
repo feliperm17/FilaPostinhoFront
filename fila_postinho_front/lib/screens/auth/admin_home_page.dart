@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fila_postinho_front/features/auth/screens/profile_screen.dart';
+import '../auth/profile_screen.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
-import 'package:fila_postinho_front/features/auth/screens/queue_info_screen.dart';
+import '../../widgets/theme_toggle_button.dart';
+import '../../widgets/background_gradient.dart';
 
-class HomePage extends StatelessWidget {
+class AdminHome extends StatelessWidget {
   final VoidCallback toggleTheme;
-  final List<String> queue = []; // Lista para armazenar os pacientes
 
-  HomePage({super.key, required this.toggleTheme});
+  const AdminHome({super.key, required this.toggleTheme});
 
   @override
   Widget build(BuildContext context) {
@@ -41,15 +39,7 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Bem-vindo',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text,
-                ),
-              ),
-              const Text(
-                'a Unidade Básica de Saúde!',
+                'Bem-vindo à Fila Postinho!',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -59,7 +49,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _showSpecialtyDialog(context);
+                  _navigateToManageSpecialties(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.background,
@@ -72,13 +62,13 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Selecionar Especialidade',
+                child: const Text('Gerenciar Especialidades',
                     style: TextStyle(fontSize: 18)),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _enterQueue(context);
+                  _navigateToManageQueues(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.background,
@@ -91,7 +81,7 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Entrar na Fila',
+                child: const Text('Gerenciar Filas',
                     style: TextStyle(fontSize: 18)),
               ),
             ],
@@ -101,41 +91,50 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _showSpecialtyDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Escolha uma Especialidade'),
-          content: const Text('As especialidades serão carregadas em breve.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Fechar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+  void _navigateToManageSpecialties(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const ManageSpecialtiesScreen(),
+      ),
     );
   }
 
-  void _enterQueue(BuildContext context) {
-    // Aqui você pode obter o nome do paciente do usuário logado
-    String patientName =
-        "Nome do Paciente"; // Substitua pelo nome real do paciente
-    int currentTicket = 1; // Defina a lógica para obter o ticket atual
-    int estimatedTime = 10; // Defina a lógica para calcular o tempo estimado
-
+  void _navigateToManageQueues(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => QueueInfoScreen(
-          patientName: patientName,
-          currentTicket: currentTicket,
-          estimatedTime: estimatedTime,
-          toggleTheme: toggleTheme,
-        ),
+        builder: (context) => const ManageQueuesScreen(),
+      ),
+    );
+  }
+}
+
+class ManageSpecialtiesScreen extends StatelessWidget {
+  const ManageSpecialtiesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Gerenciar Especialidades'),
+      ),
+      body: const Center(
+        child: Text('Aqui você pode gerenciar as especialidades.'),
+      ),
+    );
+  }
+}
+
+class ManageQueuesScreen extends StatelessWidget {
+  const ManageQueuesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Gerenciar Filas'),
+      ),
+      body: const Center(
+        child: Text('Aqui você pode gerenciar as filas.'),
       ),
     );
   }

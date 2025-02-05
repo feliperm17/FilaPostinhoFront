@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/widgets/background_gradient.dart';
 
 class SpecialtyManagementScreen extends StatefulWidget {
   final VoidCallback toggleTheme;

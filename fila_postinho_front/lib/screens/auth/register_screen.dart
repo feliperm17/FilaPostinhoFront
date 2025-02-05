@@ -1,18 +1,18 @@
+import 'package:fila_postinho_front/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fila_postinho_front/core/theme/colors.dart';
-import 'package:fila_postinho_front/shared/widgets/custom_button.dart';
-import 'package:fila_postinho_front/shared/widgets/custom_text_field.dart';
-import 'package:fila_postinho_front/shared/utils/validators.dart';
-import 'package:fila_postinho_front/features/auth/models/user_model.dart';
-import 'package:fila_postinho_front/features/auth/services/auth_service.dart';
-import 'package:fila_postinho_front/features/auth/screens/login_screen.dart';
+import 'package:fila_postinho_front/widgets/custom_button.dart';
+import 'package:fila_postinho_front/widgets/custom_text_field.dart';
+import '../../utils/validators.dart';
+import 'package:fila_postinho_front/services/auth_service.dart';
+import 'package:fila_postinho_front/screens/auth/login_screen.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:fila_postinho_front/features/auth/services/cep_service.dart';
-import 'package:fila_postinho_front/shared/widgets/theme_toggle_button.dart';
-import 'package:fila_postinho_front/shared/widgets/background_gradient.dart';
+import 'package:fila_postinho_front/services/cep_service.dart';
+import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
+import 'package:fila_postinho_front/widgets/background_gradient.dart';
 import 'package:fila_postinho_front/core/constants/responsive_breakpoints.dart';
-import 'package:fila_postinho_front/shared/widgets/responsive_container.dart';
+import 'package:fila_postinho_front/widgets/responsive_container.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -158,7 +158,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Icons.lock,
                         obscureText: true,
                         validator: Validators.validatePassword,
-                        showPasswordRules: true,
                         onChanged: (value) {
                           setState(() {}); // Para atualizar o indicador
                         },
@@ -176,7 +175,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           value,
                           _passwordController.text,
                         ),
-                        showConfirmPasswordRules: true,
                         onChanged: (value) {
                           setState(() {}); // Para atualizar o indicador
                         },
@@ -230,7 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => RegisterScreen(
+                              builder: (context) => LoginScreen(
                                 toggleTheme: widget.toggleTheme,
                               ),
                             ),
@@ -262,22 +260,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       try {
-        final user = UserModel(
-          id: UniqueKey().toString(),
+        final user = User(
           name: _nameController.text,
           cpf: _cpfController.text,
           email: _emailController.text,
           password: _passwordController.text,
-          cep: _cepController.text,
-          street: _streetController.text,
-          city: _cityController.text,
-          neighborhood: _neighborhoodController.text,
-          state: _stateController.text,
-          phone: _phoneController.text,
-          birthDate: _birthDateController.text,
-          country: _countryController.text,
           number: _numberController.text,
-          complement: _complementController.text,
         );
 
         await _authService.register(user);
@@ -408,8 +396,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool obscureText = false,
     String? Function(String?)? validator,
     Function(String)? onChanged,
-    bool showPasswordRules = false,
-    bool showConfirmPasswordRules = false,
   }) {
     return CustomTextField(
       label: label,
@@ -420,8 +406,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       inputFormatters: mask,
       obscureText: obscureText,
       onChanged: onChanged,
-      showPasswordRules: showPasswordRules,
-      showConfirmPasswordRules: showConfirmPasswordRules,
     );
   }
 
