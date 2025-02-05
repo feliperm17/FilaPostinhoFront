@@ -50,7 +50,7 @@ class MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Fila Postinho',
       theme: theme,
-      initialRoute: '/login',
+      initialRoute: '/home',
       routes: {
         '/register': (context) => LoginScreen(toggleTheme: _toggleTheme),
         '/login': (context) => LoginScreen(toggleTheme: _toggleTheme),

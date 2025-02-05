@@ -52,7 +52,8 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(toggleTheme: widget.toggleTheme),
+                  builder: (context) =>
+                      ProfileScreen(toggleTheme: widget.toggleTheme),
                 ),
               );
             },
@@ -69,7 +70,15 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Bem-vindo à Fila Postinho!',
+                'Bem-vindo',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text,
+                ),
+              ),
+              const Text(
+                'a Unidade Básica de Saúde!',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -118,7 +127,8 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Entrar na Fila', style: TextStyle(fontSize: 18)),
+                child: const Text('Entrar na Fila',
+                    style: TextStyle(fontSize: 18)),
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -144,7 +154,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _enterQueue(BuildContext context) {
-    final TextEditingController patientController = TextEditingController();
+    // Aqui você pode obter o nome do paciente do usuário logado
+    String patientName =
+        "Nome do Paciente"; // Substitua pelo nome real do paciente
+    int currentTicket = 1; // Defina a lógica para obter o ticket atual
+    int estimatedTime = 10; // Defina a lógica para calcular o tempo estimado
 
     showDialog(
       context: context,
@@ -162,13 +176,15 @@ class _HomePageState extends State<HomePage> {
               child: const Text('Adicionar'),
               onPressed: () async {
                 if (patientController.text.isNotEmpty) {
-                  final queueService = Provider.of<QueueService>(context, listen: false);
+                  final queueService =
+                      Provider.of<QueueService>(context, listen: false);
                   try {
                     // Create a new queue entry
                     final newQueue = Queue(
                       specialty: 1, // Replace with actual specialty ID
                       queueDt: DateTime.now(),
-                      positionNr: queues.length + 1, // Next position in the queue
+                      positionNr:
+                          queues.length + 1, // Next position in the queue
                       queueSize: queues.length + 1, // Update queue size
                     );
                     await queueService.create(newQueue);
