@@ -18,25 +18,42 @@ class QueueInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Informações da Fila'),
+        title: const Text('Informações da Fila'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.brightness_6),
+            onPressed: toggleTheme,
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-                'Olá Sr(a). $patientName, bem vindo(a) ao Posto de Saúde X, você está na fila para:'),
-            SizedBox(height: 20),
-            Text('Cardiologia',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 20),
-            Text('Sua Senha: $currentTicket', style: TextStyle(fontSize: 20)),
-            SizedBox(height: 10),
-            Text('Senha Atual: ${currentTicket - 2}',
-                style: TextStyle(fontSize: 16)), // Exemplo
-            SizedBox(height: 10),
-            Text('Estimativa de Tempo: $estimatedTime min',
-                style: TextStyle(fontSize: 16)),
+              'Olá Sr(a). $patientName, bem vindo(a) ao Posto de Saúde X, você está na fila para:',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Cardiologia',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Sua Senha: $currentTicket',
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Senha Atual: ${currentTicket - 2}',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Estimativa de Tempo: $estimatedTime min',
+              style: const TextStyle(fontSize: 16),
+            ),
           ],
         ),
       ),
