@@ -17,8 +17,8 @@ class QueueService {
     }
   }
 
-  Future<List<Queue>> findAll() async {
-    final response = await apiService.get('queue');
+  Future<List<Queue>> findAll(String token_) async {
+    final response = await apiService.get('queue', token_);
     if (response.statusCode == 200) {
       List<dynamic> queuesJson = jsonDecode(response.body);
       return queuesJson.map((json) => Queue.fromJson(json)).toList();
@@ -27,8 +27,8 @@ class QueueService {
     }
   }
 
-  Future<Queue> findById(String id) async {
-    final response = await apiService.get('queue/$id');
+  Future<Queue> findById(String id, String token_) async {
+    final response = await apiService.get('queue/$id', token_);
     if (response.statusCode == 200) {
       return Queue.fromJson(jsonDecode(response.body));
     } else {

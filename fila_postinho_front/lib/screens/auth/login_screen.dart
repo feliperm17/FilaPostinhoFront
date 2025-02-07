@@ -237,6 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           if (response['success'] == true) {
             jwtToken = response['token'];
+            await AuthStorageService.saveToken(jwtToken!);
             _showSnackBar(
               'Login Realizado!',
               'Você foi autenticado com sucesso.',
