@@ -6,9 +6,13 @@ import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/widgets/background_gradient.dart';
 import '../screens/specialty/specialty_list_screen.dart';
 import '../services/queue_services.dart';
+import '../services/specialty_service.dart';
 import '../models/queue_model.dart';
+import '../models/specialty_model.dart';
 import '../utils/current_user.dart';
 import '../screens/auth/queue_info_screen.dart';
+import '../../utils/jwt_token.dart';
+import '../../services/auth_storage_service.dart';
 
 class HomePage extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -21,13 +25,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Queue> queues = [];
+  Specialty? selectedSpecialty;
   final TextEditingController patientController = TextEditingController();
+  String token = "";
 
   @override
   void initState() {
     super.initState();
-    _fetchQueues();
+    _loadToken();
   }
+
+  Future<void> _loadToken() async {
+  String? savedToken = await AuthStorageService.getToken();
+  debugPrint("Token carregado: $savedToken");
+  setState(() {
+    token = savedToken ?? "";
+  });
+}
 
   @override
   void dispose() {
@@ -35,10 +49,37 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _checkAuthentication() {
+    if (token.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showSessionExpiredDialog(context);
+      });
+    }
+  }
+
+  void _showSessionExpiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Sessão Expirada'),
+        content: const Text('Sua sessão expirou. Faça login novamente.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _fetchQueues() async {
     final queueService = Provider.of<QueueService>(context, listen: false);
     try {
-      final fetchedQueues = await queueService.findAll();
+      final fetchedQueues = await queueService.findAll(token);
       if (mounted) {
         setState(() {
           queues = fetchedQueues;
@@ -54,6 +95,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final specialtyService = Provider.of<SpecialtyService>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -98,52 +140,46 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => SpecialtyListScreen(
-                        toggleTheme: widget.toggleTheme,
-                      ),
-                    ),
-                  );
+              FutureBuilder<List<Specialty>>(
+                future: specialtyService.findAll(token),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text(
+                      'Erro: ${snapshot.error}',
+                      style: const TextStyle(color: Colors.red),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('Nenhuma especialidade disponível');
+                  } else {
+                    final specialties = snapshot.data!;
+                    return DropdownButton<Specialty>(
+                      isExpanded: true,
+                      value: selectedSpecialty,
+                      items: specialties.map((Specialty specialty) {
+                        return DropdownMenuItem<Specialty>(
+                          value: specialty,
+                          child: Text(specialty.specialtyName),
+                        );
+                      }).toList(),
+                      onChanged: (Specialty? newValue) {
+                        setState(() {
+                          selectedSpecialty = newValue;
+                        });
+                      },
+                      hint: const Text('Selecionar Especialidade'),
+                      underline: Container(),
+                    );
+                  }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.background,
-                  foregroundColor: AppColors.primary,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.1,
-                    vertical: 15,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'Selecionar Especialidade',
-                  style: TextStyle(fontSize: 18),
-                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   _enterQueue(context);
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.background,
-                  foregroundColor: AppColors.primary,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.1,
-                    vertical: 15,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'Entrar na Fila',
-                  style: TextStyle(fontSize: 18),
-                ),
+                child: const Text('Entrar na Fila'),
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -154,9 +190,7 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(
                       title: Text('Queue ID: ${queue.queueId}'),
                       subtitle: Text('Specialty: ${queue.specialty}'),
-                      onTap: () {
-                        // Navigate to queue detail screen
-                      },
+                      onTap: () {},
                     );
                   },
                 ),
@@ -169,16 +203,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _enterQueue(BuildContext context) {
-    String patientName = currentUser?.name ?? "Nome do Paciente";
-    int currentTicket = 1;
-    int estimatedTime = 10;
-
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => QueueInfoScreen(
-          patientName: patientName,
-          currentTicket: currentTicket,
-          estimatedTime: estimatedTime,
+          patientName: currentUser?.name ?? "Nome do Paciente",
+          currentTicket: 1,
+          estimatedTime: 10,
           toggleTheme: widget.toggleTheme,
         ),
       ),
@@ -187,10 +217,7 @@ class _HomePageState extends State<HomePage> {
 
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
+      SnackBar(content: Text(message)),
     );
   }
 }

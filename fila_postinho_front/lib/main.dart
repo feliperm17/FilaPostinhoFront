@@ -9,6 +9,10 @@ import 'screens/auth/admin_home_page.dart';
 import 'core/theme/colors.dart';
 import 'services/specialty_service.dart';
 import 'services/api_service.dart';
+import 'services/auth_storage_service.dart';
+import 'utils/jwt_token.dart';
+//import '../../utils/jwt_token.dart';
+//import '';
 
 void main() {
   final apiService = ApiService('http://localhost:3000');
@@ -37,6 +41,23 @@ class MyAppState extends State<MyApp> {
     setState(() {
       _themeIndex = (_themeIndex + 1) % 3; // Alterna entre 3 temas
     });
+  }
+
+  void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load token from storage
+  jwtToken = await AuthStorageService.getToken();
+  
+  final apiService = ApiService('http://localhost:3000');
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SpecialtyService(apiService)),
+      ],
+      child: const MyApp(),
+    ),
+  );
   }
 
   @override
