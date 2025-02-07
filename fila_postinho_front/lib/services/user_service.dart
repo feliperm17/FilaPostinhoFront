@@ -26,8 +26,8 @@ class UserService {
     }
   }
 
-  Future<List<User>> findAllUsers() async {
-    final response = await apiService.get('users');
+  Future<List<User>> findAllUsers(String token_) async {
+    final response = await apiService.get('users', token_);
     if (response.statusCode == 200) {
       List<dynamic> usersJson = jsonDecode(response.body);
       return usersJson.map((json) => User.fromJson(json)).toList();
@@ -36,8 +36,8 @@ class UserService {
     }
   }
 
-  Future<User> findUserById(String id) async {
-    final response = await apiService.get('users/$id');
+  Future<User> findUserById(String id, String token_) async {
+    final response = await apiService.get('users/$id', token_);
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body));
     } else {
