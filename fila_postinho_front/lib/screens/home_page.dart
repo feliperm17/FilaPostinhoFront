@@ -164,9 +164,16 @@ class _HomePageState extends State<HomePage> {
                         );
                       }).toList(),
                       onChanged: (Specialty? newValue) {
-                        setState(() {
-                          selectedSpecialty = newValue;
-                        });
+                        if (newValue != null) {
+                          // Find the corresponding specialty in the current list
+                          final selected = specialties.firstWhere(
+                            (s) => s == newValue,
+                            orElse: () => newValue,
+                          );
+                          setState(() {
+                            selectedSpecialty = selected;
+                          });
+                        }
                       },
                       hint: const Text('Selecionar Especialidade'),
                       underline: Container(),
@@ -202,17 +209,67 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _enterQueue(BuildContext context) {
+  void _enterQueue(BuildContext context) async {
+  if (selectedSpecialty == null) {
+    _showSnackBar(context, 'Selecione uma especialidade');
+    return;
+  }
+
+  final queueService = Provider.of<QueueService>(context, listen: false);
+  Specialty selected = selectedSpecialty!;
+
+  try {
+    Queue? existingQueue;
+    for (var q in queues) {
+      if (q.specialty == selected.specialtyId) {
+        existingQueue = q;
+        break;
+      }
+    }
+
+    Queue queueEntry;
+
+    if (existingQueue != null) {
+      // Update existing queue
+      final updatedQueue = Queue(
+        queueId: existingQueue.queueId,
+        specialty: existingQueue.specialty,
+        queueDt: existingQueue.queueDt,
+        positionNr: existingQueue.positionNr,
+        queueSize: existingQueue.queueSize + 1,
+      );
+      queueEntry = await queueService.update(existingQueue.queueId.toString(), updatedQueue);
+    } else {
+      // Create new queue
+      final newQueue = Queue(
+        queueId: null,
+        specialty: selected.specialtyId!,
+        queueDt: DateTime.now(),
+        positionNr: 0, // Backend should initialize current position
+        queueSize: 1,
+      );
+      queueEntry = await queueService.create(newQueue);
+    }
+
+    // Navigate to QueueInfoScreen with dynamic data
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => QueueInfoScreen(
           patientName: currentUser?.name ?? "Nome do Paciente",
-          currentTicket: 1,
-          estimatedTime: 10,
+          currentTicket: queueEntry.queueSize,
+          currentPosition: queueEntry.positionNr,
+          estimatedTime: (queueEntry.queueSize - queueEntry.positionNr) * 10,
           toggleTheme: widget.toggleTheme,
+          specialtyName: selected.specialtyName,
         ),
       ),
     );
+
+    // Refresh the queues list
+    await _fetchQueues();
+    } catch (e) {
+      _showSnackBar(context, 'Erro ao entrar na fila: $e');
+    }
   }
 
   void _showSnackBar(BuildContext context, String message) {
