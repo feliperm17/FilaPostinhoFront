@@ -21,7 +21,7 @@ class Specialty {
 
   factory Specialty.fromJson(Map<String, dynamic> json) {
     return Specialty(
-      specialtyId: json['specialty_id'],
+      specialtyId: json['specialty_id'] != null ? int.parse(json['specialty_id'].toString()) : null,
       specialtyName: json['specialty_name'],
     );
   }

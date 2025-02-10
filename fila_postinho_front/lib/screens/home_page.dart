@@ -10,7 +10,8 @@ import '../services/specialty_service.dart';
 import '../models/queue_model.dart';
 import '../models/specialty_model.dart';
 import '../utils/current_user.dart';
-import '../screens/auth/queue_info_screen.dart';
+import '../screens/queue/queue_info_screen.dart';
+//import '../screens/auth/queue_info_screen.dart';
 import '../../utils/jwt_token.dart';
 import '../../services/auth_storage_service.dart';
 
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadToken();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchQueues());
   }
 
   Future<void> _loadToken() async {

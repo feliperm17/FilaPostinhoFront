@@ -16,12 +16,13 @@ class Queue {
   factory Queue.fromJson(Map<String, dynamic> json) {
     return Queue(
       queueId: json['queue_id'] != null ? int.parse(json['queue_id'].toString()) : null,
-      specialty: int.parse(json['specialty'].toString()), // Convert string to int
+      specialty: int.parse(json['specialty'].toString()), // Correctly parsed as int
       queueDt: DateTime.parse(json['queue_dt']),
-      positionNr: int.parse(json['position_nr'].toString()), // Convert string to int
-      queueSize: int.parse(json['queue_size'].toString()), // Convert string to int
+      positionNr: int.parse(json['position_nr'].toString()),
+      queueSize: int.parse(json['queue_size'].toString()),
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {
