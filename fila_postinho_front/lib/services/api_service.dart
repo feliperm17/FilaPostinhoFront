@@ -1,29 +1,42 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/jwt_token.dart';
 
 class ApiService {
   final String baseUrl;
 
   ApiService(this.baseUrl);
 
-  Future<http.Response> get(String endpoint) async {
-    final response = await http.get(Uri.parse('$baseUrl/$endpoint'));
-    return response;
+  Future<http.Response> get(String endpoint, String token_) async {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token_',
+    };
+    return await http.get(
+      Uri.parse('$baseUrl/$endpoint'),
+      headers: headers,
+    );
   }
 
   Future<http.Response> post(String endpoint, Map<String, dynamic> body) async {
-    final response = await http.post(
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $jwtToken',
+    };
+    return await http.post(
       Uri.parse('$baseUrl/$endpoint'),
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: jsonEncode(body),
     );
-    return response;
   }
 
   Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {
     final response = await http.put(
       Uri.parse('$baseUrl/$endpoint'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwtToken',
+        },
       body: jsonEncode(body),
     );
     return response;

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import '../../services/specialty_service.dart';
 
 class QueueInfoScreen extends StatelessWidget {
   final String patientName;
   final int currentTicket;
+  final int currentPosition; // Add this line
   final int estimatedTime;
   final VoidCallback toggleTheme;
+  final String specialtyName; // Change from dynamic to String
 
   const QueueInfoScreen({
     super.key,
     required this.patientName,
     required this.currentTicket,
+    required this.currentPosition, // Add this
     required this.estimatedTime,
-    required this.toggleTheme, required int currentPosition, required String specialtyName,
+    required this.toggleTheme,
+    required this.specialtyName,
   });
 
   @override
@@ -31,13 +36,13 @@ class QueueInfoScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Olá Sr(a). $patientName, bem vindo(a) ao Posto de Saúde X, você está na fila para:',
+              'Olá Sr(a). $patientName, bem vindo(a) ao Posto de Saúde aaaaaaaaa, você está na fila para:',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Cardiologia',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              specialtyName,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Text(
@@ -46,7 +51,7 @@ class QueueInfoScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Senha Atual: ${currentTicket - 2}',
+              'Senha Atual: $currentPosition',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),

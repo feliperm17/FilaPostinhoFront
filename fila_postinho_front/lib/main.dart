@@ -9,14 +9,28 @@ import 'screens/auth/admin_home_page.dart';
 import 'core/theme/colors.dart';
 import 'services/specialty_service.dart';
 import 'services/api_service.dart';
+import 'services/auth_storage_service.dart';
+import 'services/queue_services.dart'; // Add this import
+import 'utils/jwt_token.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load token from storage
+  jwtToken = await AuthStorageService.getToken();
+
   final apiService = ApiService('http://localhost:3000');
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SpecialtyService(apiService)),
+        Provider<ApiService>(create: (_) => apiService), // Provide ApiService
+        ChangeNotifierProvider(
+          create: (context) => SpecialtyService(context.read<ApiService>()),
+        ),
+        Provider<QueueService>( // Add QueueService provider
+          create: (context) => QueueService(context.read<ApiService>()),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -31,11 +45,11 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  int _themeIndex = 0; // 0: Light, 1: Dark, 2: Colorido
+  int _themeIndex = 0;
 
   void _toggleTheme() {
     setState(() {
-      _themeIndex = (_themeIndex + 1) % 3; // Alterna entre 3 temas
+      _themeIndex = (_themeIndex + 1) % 3;
     });
   }
 
