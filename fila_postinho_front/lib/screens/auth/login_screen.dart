@@ -93,6 +93,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         if (!isSmallScreen) const SizedBox(height: 32),
                         const SizedBox(height: 24),
+                        // Added header here
+                        Text(
+                          'Fila Postinho Systems',
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 28 : 36,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 40),
                         Text(
                           'Login',
                           style: TextStyle(

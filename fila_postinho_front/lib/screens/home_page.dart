@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadToken();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchQueues());
+    //WidgetsBinding.instance.addPostFrameCallback((_) => _fetchQueues());
   }
 
   Future<void> _loadToken() async {
