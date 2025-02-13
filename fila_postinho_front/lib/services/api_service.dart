@@ -10,7 +10,7 @@ class ApiService {
   Future<http.Response> get(String endpoint, String token_) async {
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token_',
+      'Authorization': '$jwtToken',
     };
     return await http.get(
       Uri.parse('$baseUrl/$endpoint'),
@@ -21,7 +21,7 @@ class ApiService {
   Future<http.Response> post(String endpoint, Map<String, dynamic> body) async {
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $jwtToken',
+      'Authorization': '$jwtToken',
     };
     return await http.post(
       Uri.parse('$baseUrl/$endpoint'),
@@ -35,7 +35,7 @@ class ApiService {
       Uri.parse('$baseUrl/$endpoint'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $jwtToken',
+        'Authorization': '$jwtToken',
         },
       body: jsonEncode(body),
     );
