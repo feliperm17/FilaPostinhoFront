@@ -265,7 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           cpf: _cpfController.text,
           email: _emailController.text,
           password: _passwordController.text,
-          number: _numberController.text,
+          number: _phoneController.text,
         );
 
         await _authService.register(user);
