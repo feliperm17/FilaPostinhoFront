@@ -14,11 +14,22 @@ class AuthService {
         body: jsonEncode(user.toJson()),
       );
 
-      return jsonDecode(response.body);
+      final responseBody = jsonDecode(response.body);
+
+      // Tratar códigos de status diferentes de 201
+      if (response.statusCode == 201) {
+        return {'success': true, 'message': 'Cadastro realizado com sucesso'};
+      } else {
+        // Mapear o campo 'error' do backend para 'message' no front
+        return {
+          'success': false,
+          'message': responseBody['error'] ?? 'Erro desconhecido no cadastro'
+        };
+      }
     } catch (e) {
       return {
         'success': false,
-        'message': 'Erro ao conectar com o servidor: ${e.toString()}'
+        'message': 'Erro de conexão: ${e.toString().replaceAll(RegExp(r'^Exception: '), '')}'
       };
     }
   }
