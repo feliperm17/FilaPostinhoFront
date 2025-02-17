@@ -27,6 +27,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Queue> queues = [];
   Specialty? selectedSpecialty;
+  DateTime? selectedDate;
   final TextEditingController patientController = TextEditingController();
   String token = "";
 
@@ -38,17 +39,42 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadToken() async {
-  String? savedToken = await AuthStorageService.getToken();
-  debugPrint("Token carregado: $savedToken");
-  setState(() {
-    token = savedToken ?? "";
-  });
-}
+    String? savedToken = await AuthStorageService.getToken();
+    debugPrint("Token carregado: $savedToken");
+    setState(() {
+      token = savedToken ?? "";
+    });
+  }
 
   @override
   void dispose() {
     patientController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async{
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(), 
+      lastDate: DateTime(DateTime.now().year + 1),
+      selectableDayPredicate: (DateTime date){
+        //Falta Implementar
+        return _isDateValidForSpecialty(date);
+      },
+    );
+
+    if(picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
+  bool _isDateValidForSpecialty(DateTime date){
+    //Falta implementar
+    //Precisa adicionar a data no modelo
+    return true;
   }
 
   void _checkAuthentication() {
@@ -184,6 +210,22 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () => _selectDate(context),
+                  ),
+                  Text(
+                    selectedDate != null
+                        ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+                        : "Selecione a data",
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   _enterQueue(context);
@@ -236,6 +278,7 @@ class _HomePageState extends State<HomePage> {
       final updatedQueue = Queue(
         queueId: existingQueue.queueId,
         specialty: existingQueue.specialty,
+        //queueDt: selecteDate!,
         queueDt: existingQueue.queueDt,
         positionNr: existingQueue.positionNr,
         queueSize: existingQueue.queueSize + 1,
