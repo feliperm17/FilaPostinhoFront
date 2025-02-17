@@ -255,9 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
       try {
         final user = User(
@@ -268,36 +266,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
           number: _phoneController.text,
         );
 
-        await _authService.register(user);
-
-        if (mounted) {
-          _showSnackBar(
-            'Cadastro Realizado!',
-            'Seu cadastro foi realizado com sucesso. Você já pode fazer login.',
-            true,
-          );
+        final response = await _authService.register(user);
+        
+        if (response['success'] == true) {
+          _showSnackBar('Cadastro Realizado!', response['message'], true);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => LoginScreen(
-                toggleTheme: widget.toggleTheme,
-              ),
+              builder: (context) => LoginScreen(toggleTheme: widget.toggleTheme),
             ),
           );
+        } else {
+          _showSnackBar('Erro no Cadastro', response['message'], false);
         }
       } catch (e) {
-        if (mounted) {
-          _showSnackBar(
-            'Erro no Sistema',
-            'Ocorreu um erro ao tentar realizar o cadastro. Tente novamente mais tarde.',
-            false,
-          );
-        }
+        _showSnackBar('Erro no Sistema', 
+          'Ocorreu um erro ao tentar realizar o cadastro. Tente novamente mais tarde.',
+          false
+        );
       } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
