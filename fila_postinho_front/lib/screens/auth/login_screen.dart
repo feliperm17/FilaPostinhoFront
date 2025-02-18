@@ -51,24 +51,23 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
+    return BackgroundGradient(
+      child:  Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ThemeToggleButton(
-              onPressed: widget.toggleTheme,
-              isDark: isDark,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ThemeToggleButton(
+                onPressed: widget.toggleTheme,
+                isDark: isDark,
+              ),
             ),
-          ),
-        ],
-      ),
-      body: BackgroundGradient(
-        child: LayoutBuilder(
+          ],
+        ),
+        body: LayoutBuilder(
           builder: (context, constraints) {
             final isSmallScreen = constraints.maxWidth < 600;
 
@@ -185,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           },
         ),
-      ),
+      )
     );
   }
 

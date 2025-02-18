@@ -74,6 +74,7 @@ class MyAppState extends State<MyApp> {
     }
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Fila Postinho',
       theme: theme,
       initialRoute: '/login',
