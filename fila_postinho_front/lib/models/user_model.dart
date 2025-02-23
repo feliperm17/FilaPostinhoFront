@@ -34,7 +34,7 @@ class User {
       cpf: json['cpf'],
       email: json['email'],
       number: json['phone_nr'],
-      isAdmin: json['account_st'] == '1',
+      isAdmin: json['is_admin'],
     );
   }
 }
