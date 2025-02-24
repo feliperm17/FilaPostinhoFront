@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/widgets/background_gradient.dart';
@@ -19,7 +20,18 @@ class SpecialtyManagementScreen extends StatefulWidget {
 class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
   late Future<List<Specialty>> _specialtiesFuture;
   final TextEditingController _specialtyController = TextEditingController();
+  final TextEditingController _estimatedTimeController = TextEditingController();
   String token = "";
+  Set<int> _selectedDays = {};
+  final List<String> _daysOfWeek = [
+    'Domingo',
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+    'Sábado',
+  ];
 
   @override
   void initState() {
@@ -46,16 +58,41 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
     }
   }
 
+  List<Widget> _buildDayCheckboxes(
+      Set<int> selectedDays, Function(bool?, int) onDaySelected) {
+    return List.generate(7, (index) {
+      return CheckboxListTile(
+        title: Text(_daysOfWeek[index]),
+        value: selectedDays.contains(index),
+        onChanged: (value) => onDaySelected(value, index),
+      );
+    }).toList();
+  }
+
   void _addSpecialty() async {
-    if (_specialtyController.text.isEmpty) return;
-    final newSpecialty = Specialty(specialtyName: _specialtyController.text);
+    if (_specialtyController.text.isEmpty ||
+        _estimatedTimeController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha todos os campos')),
+      );
+      return;
+    }
+
     try {
+      int estimatedTime = int.parse(_estimatedTimeController.text);
+      final newSpecialty = Specialty(
+        specialtyName: _specialtyController.text,
+        availableDays: _selectedDays.toList(),
+        estimatedTime: estimatedTime,
+      );
       final specialtyService =
           Provider.of<SpecialtyService>(context, listen: false);
       await specialtyService.create(newSpecialty);
       _specialtyController.clear();
+      _estimatedTimeController.clear();
       setState(() {
         _specialtiesFuture = _fetchSpecialties();
+        _selectedDays.clear();
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -66,41 +103,96 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
 
   void _editSpecialty(Specialty specialty) {
     _specialtyController.text = specialty.specialtyName;
+    _estimatedTimeController.text = specialty.estimatedTime.toString();
+    Set<int> selectedDays = Set.from(specialty.availableDays);
+
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Editar Especialidade'),
-          content: TextField(
-            controller: _specialtyController,
-            decoration: const InputDecoration(labelText: 'Especialidade'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                try {
-                  final updatedSpecialty = Specialty(
-                    specialtyId: specialty.specialtyId,
-                    specialtyName: _specialtyController.text,
-                  );
-                  final specialtyService =
-                      Provider.of<SpecialtyService>(context, listen: false);
-                  await specialtyService.update(
-                      specialty.specialtyId.toString(), updatedSpecialty);
-                  _specialtyController.clear();
-                  setState(() {
-                    _specialtiesFuture = _fetchSpecialties();
-                  });
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Erro ao editar: $e')),
-                  );
-                }
-              },
-              child: const Text('Salvar'),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Editar Especialidade'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _specialtyController,
+                            decoration:
+                                const InputDecoration(labelText: 'Especialidade'),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: _estimatedTimeController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                                labelText: 'Tempo Estimado (minutos)'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('Dias disponíveis:'),
+                    ..._buildDayCheckboxes(
+                      selectedDays,
+                      (value, index) {
+                        setState(() {
+                          if (value!) {
+                            selectedDays.add(index);
+                          } else {
+                            selectedDays.remove(index);
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      int estimatedTime =
+                          int.parse(_estimatedTimeController.text);
+                      final updatedSpecialty = Specialty(
+                        specialtyId: specialty.specialtyId,
+                        specialtyName: _specialtyController.text,
+                        availableDays: selectedDays.toList(),
+                        estimatedTime: estimatedTime,
+                      );
+                      final specialtyService =
+                          Provider.of<SpecialtyService>(context, listen: false);
+                      await specialtyService.update(
+                          specialty.specialtyId.toString(), updatedSpecialty);
+                      
+                      // Clear controllers AFTER successful update
+                      _specialtyController.clear();
+                      _estimatedTimeController.clear();
+                      
+                      // Refresh list
+                      setState(() {
+                        _specialtiesFuture = _fetchSpecialties();
+                      });
+                      
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro ao editar: $e')),
+                      );
+                    }
+                  },
+                  child: const Text('Salvar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -138,10 +230,42 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              TextField(
-                controller: _specialtyController,
-                decoration:
-                    const InputDecoration(labelText: 'Nova Especialidade'),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _specialtyController,
+                      decoration:
+                          const InputDecoration(labelText: 'Nome da Especialidade'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _estimatedTimeController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: const InputDecoration(
+                          labelText: 'Tempo Estimado (minutos)'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              const Text('Dias disponíveis:'),
+              Column(
+                children: _buildDayCheckboxes(
+                  _selectedDays,
+                  (value, index) {
+                    setState(() {
+                      if (value!) {
+                        _selectedDays.add(index);
+                      } else {
+                        _selectedDays.remove(index);
+                      }
+                    });
+                  },
+                ),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
@@ -170,6 +294,11 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
                           final specialty = specialties[index];
                           return ListTile(
                             title: Text(specialty.specialtyName),
+                            subtitle: Text(
+                              'Tempo estimado: ${specialty.estimatedTime} minutos\n'
+                              'Dias disponíveis: ${specialty.availableDays.map((day) => _daysOfWeek[day]).join(', ')}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
