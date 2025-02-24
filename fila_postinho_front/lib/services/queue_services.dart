@@ -51,4 +51,25 @@ class QueueService {
       throw Exception('Failed to delete queue');
     }
   }
+
+  Future<void> movePatient(String queueId, int direction) async {
+  final response = await apiService.put('queue/$queueId/move', {
+    'direction': direction,
+  });
+
+  if (response.statusCode != 200) {
+    throw Exception('Erro ao mover paciente na fila');
+  }
+}
+
+Future<void> updateQueueSpecialty(String queueId, int newSpecialtyId) async {
+  final response = await apiService.put('queue/$queueId/specialty', {
+    'specialty_id': newSpecialtyId,
+  });
+
+  if (response.statusCode != 200) {
+    throw Exception('Erro ao atualizar a especialidade da fila');
+  }
+}
+
 }
