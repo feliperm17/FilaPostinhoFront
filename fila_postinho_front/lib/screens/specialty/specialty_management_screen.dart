@@ -52,7 +52,6 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
     final specialtyService =
         Provider.of<SpecialtyService>(context, listen: false);
     try {
-      // Pass the token to findAll
       return await specialtyService.findAll(token);
     } catch (e) {
       throw Exception('Não foi possível carregar as especialidades: $e');
@@ -103,15 +102,17 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
   }
 
   void _editSpecialty(Specialty specialty) {
-    _specialtyController.text = specialty.specialtyName;
-    _estimatedTimeController.text = specialty.estimatedTime.toString();
-    Set<int> selectedDays = Set.from(specialty.availableDays);
+    final mainContext = context; // Capture main widget context
+    final filteredDays = specialty.availableDays.where((day) => day > 0 && day < 6).toSet();
+    final editSpecialtyController = TextEditingController(text: specialty.specialtyName);
+    final editTimeController = TextEditingController(text: specialty.estimatedTime.toString());
+    Set<int> selectedDays = Set.from(filteredDays);
 
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setStateDialog) {
             return AlertDialog(
               title: const Text('Editar Especialidade'),
               content: SingleChildScrollView(
@@ -122,7 +123,7 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
                       children: [
                         Expanded(
                           child: TextField(
-                            controller: _specialtyController,
+                            controller: editSpecialtyController,
                             decoration:
                                 const InputDecoration(labelText: 'Especialidade'),
                           ),
@@ -130,7 +131,7 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: TextField(
-                            controller: _estimatedTimeController,
+                            controller: editTimeController,
                             keyboardType: TextInputType.number,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                             decoration: const InputDecoration(
@@ -144,7 +145,7 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
                     ..._buildDayCheckboxes(
                       selectedDays,
                       (value, index) {
-                        setState(() {
+                        setStateDialog(() {
                           if (value!) {
                             selectedDays.add(index);
                           } else {
@@ -160,31 +161,28 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
                 TextButton(
                   onPressed: () async {
                     try {
-                      int estimatedTime =
-                          int.parse(_estimatedTimeController.text);
+                      int estimatedTime = int.parse(editTimeController.text);
                       final updatedSpecialty = Specialty(
                         specialtyId: specialty.specialtyId,
-                        specialtyName: _specialtyController.text,
+                        specialtyName: editSpecialtyController.text,
                         availableDays: selectedDays.toList(),
                         estimatedTime: estimatedTime,
                       );
                       final specialtyService =
-                          Provider.of<SpecialtyService>(context, listen: false);
+                          Provider.of<SpecialtyService>(mainContext, listen: false);
                       await specialtyService.update(
                           specialty.specialtyId.toString(), updatedSpecialty);
-                      
-                      // Clear controllers AFTER successful update
-                      _specialtyController.clear();
-                      _estimatedTimeController.clear();
-                      
-                      // Refresh list
-                      setState(() {
-                        _specialtiesFuture = _fetchSpecialties();
-                      });
-                      
-                      Navigator.of(context).pop();
+
+                      // Refresh main widget state
+                      if (mainContext.mounted) {
+                        setState(() {
+                          _specialtiesFuture = _fetchSpecialties();
+                        });
+                      }
+
+                      Navigator.of(dialogContext).pop();
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
                         SnackBar(content: Text('Erro ao editar: $e')),
                       );
                     }
