@@ -1,5 +1,5 @@
-//import 'package:http/http.dart' as http;
 import '../models/queue_model.dart';
+import '../models/user_model.dart';
 import 'dart:convert';
 import 'api_service.dart';
 
@@ -8,7 +8,7 @@ class QueueService {
 
   QueueService(this.apiService);
 
-  Future<Queue> create(Queue queue) async {
+  Future<Queue> create(Queue queue, String token_) async {
     final response = await apiService.post('queue', queue.toJson());
     if (response.statusCode == 201) {
       return Queue.fromJson(jsonDecode(response.body));
@@ -36,7 +36,7 @@ class QueueService {
     }
   }
 
-  Future<Queue> update(String id, Queue queue) async {
+  Future<Queue> update(String id, Queue queue, String token_) async {
     final response = await apiService.put('queue/$id', queue.toJson());
     if (response.statusCode == 200) {
       return Queue.fromJson(jsonDecode(response.body));
@@ -45,31 +45,53 @@ class QueueService {
     }
   }
 
-  Future<void> delete(String id) async {
+  Future<void> delete(String id, String token_) async {
     final response = await apiService.delete('queue/$id');
     if (response.statusCode != 200) {
       throw Exception('Failed to delete queue');
     }
   }
 
-  Future<void> movePatient(String queueId, int direction) async {
-  final response = await apiService.put('queue/$queueId/move', {
-    'direction': direction,
-  });
-
-  if (response.statusCode != 200) {
-    throw Exception('Erro ao mover paciente na fila');
+  Future<List<User>> getQueueUsers(String queueId, String token_) async {
+    final response = await apiService.get('queue/$queueId/users', token_);
+    if (response.statusCode == 200) {
+      List<dynamic> usersJson = jsonDecode(response.body);
+      return usersJson.map((json) => User.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load queue users');
+    }
   }
-}
 
-Future<void> updateQueueSpecialty(String queueId, int newSpecialtyId) async {
-  final response = await apiService.put('queue/$queueId/specialty', {
-    'specialty_id': newSpecialtyId,
-  });
-
-  if (response.statusCode != 200) {
-    throw Exception('Erro ao atualizar a especialidade da fila');
+  Future<void> joinQueue(String queueId, String token_) async {
+    final response = await apiService.post('queue/$queueId/join', {});
+    if (response.statusCode != 201) {
+      throw Exception('Failed to join queue');
+    }
   }
-}
 
+  Future<int> getUserPosition(String queueId, String token_) async {
+    final response = await apiService.get('queue/$queueId/position', token_);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['position'];
+    } else {
+      throw Exception('Failed to get user position');
+    }
+  }
+
+  Future<void> advanceQueue(String queueId, String token_) async {
+    final response = await apiService.post('queue/$queueId/next', {});
+    if (response.statusCode != 200) {
+      throw Exception('Failed to advance queue');
+    }
+  }
+
+  Future<List<User>> getFullQueue(String queueId, String token_) async {
+    final response = await apiService.get('queue/$queueId/all', token_);
+    if (response.statusCode == 200) {
+      List<dynamic> usersJson = jsonDecode(response.body);
+      return usersJson.map((json) => User.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load full queue');
+    }
+  }
 }

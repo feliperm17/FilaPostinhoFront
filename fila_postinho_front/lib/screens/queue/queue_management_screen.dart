@@ -7,7 +7,7 @@ import '../../models/specialty_model.dart';
 import '../../widgets/theme_toggle_button.dart';
 import '../../widgets/background_gradient.dart';
 import '../../services/auth_storage_service.dart';
-
+import '../../models/user_model.dart';
 
 class QueueManagementScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -22,7 +22,6 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
   List<Queue> queues = [];
   List<Specialty> specialties = [];
   final TextEditingController _queueDateController = TextEditingController();
-  final TextEditingController _patientController = TextEditingController();
   Specialty? selectedSpecialty;
   bool isLoading = true;
 
@@ -33,29 +32,27 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
   }
 
   Future<void> _fetchData() async {
-  final queueService = Provider.of<QueueService>(context, listen: false);
-  final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
+    final queueService = Provider.of<QueueService>(context, listen: false);
+    final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
+    String? token = await AuthStorageService.getToken();
 
-  String? token = await AuthStorageService.getToken();  // PEGAR O TOKEN DO USUÁRIO
-
-  if (token != null) {
-    try {
-      final fetchedQueues = await queueService.findAll(token);
-      final fetchedSpecialties = await specialtyService.findAll(token);
-      setState(() {
-        queues = fetchedQueues;
-        specialties = fetchedSpecialties;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() => isLoading = false);
-      _showSnackBar('Erro ao carregar dados: $e');
+    if (token != null) {
+      try {
+        final fetchedQueues = await queueService.findAll(token);
+        final fetchedSpecialties = await specialtyService.findAll(token);
+        setState(() {
+          queues = fetchedQueues;
+          specialties = fetchedSpecialties;
+          isLoading = false;
+        });
+      } catch (e) {
+        setState(() => isLoading = false);
+        _showSnackBar('Erro ao carregar dados: $e');
+      }
+    } else {
+      _showSnackBar('Erro: Token não encontrado');
     }
-  } else {
-    _showSnackBar('Erro: Token não encontrado');
   }
-}
-
 
   Future<void> _addQueue() async {
     if (selectedSpecialty == null || _queueDateController.text.isEmpty) {
@@ -64,6 +61,8 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
     }
 
     final queueService = Provider.of<QueueService>(context, listen: false);
+    String? token = await AuthStorageService.getToken();
+    
     try {
       final newQueue = Queue(
         queueId: null,
@@ -72,7 +71,7 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
         positionNr: 0,
         queueSize: 0,
       );
-      await queueService.create(newQueue);
+      await queueService.create(newQueue, token!);
       _showSnackBar('Fila adicionada com sucesso!');
       _fetchData();
     } catch (e) {
@@ -80,36 +79,44 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
     }
   }
 
-  Future<void> _movePatient(Queue queue, int direction) async {
-    final queueService = Provider.of<QueueService>(context, listen: false);
-    try {
-      await queueService.movePatient(queue.queueId!.toString(), direction);
-      _showSnackBar('Paciente movido na fila!');
-      _fetchData();
-    } catch (e) {
-      _showSnackBar('Erro ao mover paciente: $e');
-    }
-  }
-
-  Future<void> _changeQueueSpecialty(Queue queue, Specialty newSpecialty) async {
-    final queueService = Provider.of<QueueService>(context, listen: false);
-    try {
-      await queueService.updateQueueSpecialty(queue.queueId!.toString(), newSpecialty.specialtyId!);
-      _showSnackBar('Especialidade da fila atualizada!');
-      _fetchData();
-    } catch (e) {
-      _showSnackBar('Erro ao alterar especialidade: $e');
-    }
-  }
-
   Future<void> _removeQueue(int queueId) async {
     final queueService = Provider.of<QueueService>(context, listen: false);
+    String? token = await AuthStorageService.getToken();
+
     try {
-      await queueService.delete(queueId.toString());
+      await queueService.delete(queueId.toString(), token!);
       _showSnackBar('Fila removida!');
       _fetchData();
     } catch (e) {
       _showSnackBar('Erro ao remover fila: $e');
+    }
+  }
+
+  Future<void> _showQueueUsers(int queueId) async {
+    final queueService = Provider.of<QueueService>(context, listen: false);
+    String? token = await AuthStorageService.getToken();
+
+    try {
+      final users = await queueService.getQueueUsers(queueId.toString(), token!);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Usuários na Fila $queueId'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: users.length,
+              itemBuilder: (ctx, i) => ListTile(
+                title: Text(users[i].name),
+                subtitle: Text(users[i].email),
+              ),
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      _showSnackBar('Erro ao carregar usuários: $e');
     }
   }
 
@@ -141,27 +148,20 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
                     DropdownButton<Specialty>(
                       hint: const Text('Selecione uma Especialidade'),
                       value: selectedSpecialty,
-                      onChanged: (value) {
-                        setState(() => selectedSpecialty = value);
-                      },
-                      items: specialties.map((s) {
-                        return DropdownMenuItem(
-                          value: s,
-                          child: Text(s.specialtyName),
-                        );
-                      }).toList(),
+                      onChanged: (value) => setState(() => selectedSpecialty = value),
+                      items: specialties.map((s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(s.specialtyName),
+                      )).toList(),
                     ),
                     TextField(
                       controller: _queueDateController,
                       decoration: const InputDecoration(labelText: 'Data da Fila (YYYY-MM-DD)'),
-                      keyboardType: TextInputType.datetime,
                     ),
-                    const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: _addQueue,
                       child: const Text('Adicionar Fila'),
                     ),
-                    const SizedBox(height: 20),
                     Expanded(
                       child: ListView.builder(
                         itemCount: queues.length,
@@ -169,21 +169,19 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
                           final queue = queues[index];
                           return ListTile(
                             title: Text('Fila ID: ${queue.queueId}'),
-                            subtitle: Text('Especialidade: ${queue.specialty}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Text('Especialidade: ${queue.getSpecialtyName(specialties)}'),
+                                Text('Tamanho: ${queue.queueSize}'),
+                              ],
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.arrow_upward),
-                                  onPressed: () => _movePatient(queue, -1),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.arrow_downward),
-                                  onPressed: () => _movePatient(queue, 1),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.swap_horiz),
-                                  onPressed: () => _changeQueueSpecialty(queue, selectedSpecialty!),
+                                  icon: const Icon(Icons.people),
+                                  onPressed: () => _showQueueUsers(queue.queueId!),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.red),

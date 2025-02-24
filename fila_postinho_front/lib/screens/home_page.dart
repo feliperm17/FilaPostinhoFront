@@ -283,7 +283,7 @@ class _HomePageState extends State<HomePage> {
         positionNr: existingQueue.positionNr,
         queueSize: existingQueue.queueSize + 1,
       );
-      queueEntry = await queueService.update(existingQueue.queueId.toString(), updatedQueue);
+      queueEntry = await queueService.update(existingQueue.queueId.toString(), updatedQueue, token);
     } else {
       // Create new queue
       final newQueue = Queue(
@@ -293,7 +293,7 @@ class _HomePageState extends State<HomePage> {
         positionNr: 0, // Backend should initialize current position
         queueSize: 1,
       );
-      queueEntry = await queueService.create(newQueue);
+      queueEntry = await queueService.create(newQueue, token);
     }
 
     // Navigate to QueueInfoScreen with dynamic data
