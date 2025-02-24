@@ -52,6 +52,7 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
     final specialtyService =
         Provider.of<SpecialtyService>(context, listen: false);
     try {
+      // Pass the token to findAll
       return await specialtyService.findAll(token);
     } catch (e) {
       throw Exception('Não foi possível carregar as especialidades: $e');
