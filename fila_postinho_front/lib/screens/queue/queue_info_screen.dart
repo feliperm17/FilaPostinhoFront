@@ -4,7 +4,6 @@ import '../../services/specialty_service.dart';
 class QueueInfoScreen extends StatelessWidget {
   final String patientName;
   final int currentTicket;
-  final int currentPosition; // Add this line
   final int estimatedTime;
   final VoidCallback toggleTheme;
   final String specialtyName; // Change from dynamic to String
@@ -13,7 +12,6 @@ class QueueInfoScreen extends StatelessWidget {
     super.key,
     required this.patientName,
     required this.currentTicket,
-    required this.currentPosition, // Add this
     required this.estimatedTime,
     required this.toggleTheme,
     required this.specialtyName,
@@ -48,11 +46,6 @@ class QueueInfoScreen extends StatelessWidget {
             Text(
               'Sua Senha: $currentTicket',
               style: const TextStyle(fontSize: 20),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Senha Atual: $currentPosition',
-              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
             Text(

@@ -1,5 +1,6 @@
 //import 'package:http/http.dart' as http;
 import '../models/queue_model.dart';
+import '../models/specialty_model.dart';
 import 'dart:convert';
 import 'api_service.dart';
 
@@ -18,7 +19,7 @@ class QueueService {
   }
 
   Future<List<Queue>> findAll(String token_) async {
-    final response = await apiService.get('queue', token_);
+    final response = await apiService.get('queue');
     if (response.statusCode == 200) {
       List<dynamic> queuesJson = jsonDecode(response.body);
       return queuesJson.map((json) => Queue.fromJson(json)).toList();
@@ -27,8 +28,8 @@ class QueueService {
     }
   }
 
-  Future<Queue> findById(String id, String token_) async {
-    final response = await apiService.get('queue/$id', token_);
+  Future<Queue> findById(int id, String token_) async {
+    final response = await apiService.get('queue/$id');
     if (response.statusCode == 200) {
       return Queue.fromJson(jsonDecode(response.body));
     } else {
@@ -49,6 +50,26 @@ class QueueService {
     final response = await apiService.delete('queue/$id');
     if (response.statusCode != 200) {
       throw Exception('Failed to delete queue');
+    }
+  }
+
+  Future<int> join(Specialty specialty) async {
+    final response = await apiService.post(
+        'queue/${specialty.specialtyId}/join', specialty.toJson());
+    if (response.statusCode == 201) {
+      return int.parse(response.body);
+    } else {
+      throw Exception('Failed to create queue');
+    }
+  }
+
+  Future<int> getPosition(int queueId, String token_) async {
+    final response = await apiService.get('queue/$queueId/position');
+    if (response.statusCode == 200) {
+      Map<String, dynamic> json = jsonDecode(response.body);
+      return int.parse(json['position']);
+    } else {
+      throw Exception('Failed to load queue');
     }
   }
 }
