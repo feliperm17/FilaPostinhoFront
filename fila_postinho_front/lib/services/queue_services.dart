@@ -19,7 +19,7 @@ class QueueService {
   }
 
   Future<List<Queue>> findAll(String token_) async {
-    final response = await apiService.get('queue', token_);
+    final response = await apiService.get('queue');
     if (response.statusCode == 200) {
       List<dynamic> queuesJson = jsonDecode(response.body);
       return queuesJson.map((json) => Queue.fromJson(json)).toList();

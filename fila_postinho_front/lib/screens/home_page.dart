@@ -258,6 +258,10 @@ class _HomePageState extends State<HomePage> {
       _showSnackBar(context, 'Selecione uma especialidade');
       return;
     }
+    if (selectedSpecialty == null) {
+      _showSnackBar(context, 'Selecione uma especialidade');
+      return;
+    }
 
     final queueService = Provider.of<QueueService>(context, listen: false);
     final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
