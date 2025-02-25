@@ -214,6 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       try {
         final user = User(
+          id: 0,
           name: _nameController.text,
           cpf: _cpfController.text,
           email: _emailController.text,
