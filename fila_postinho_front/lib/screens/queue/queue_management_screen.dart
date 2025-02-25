@@ -71,7 +71,7 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
         positionNr: 0,
         queueSize: 0,
       );
-      await queueService.create(newQueue, token!);
+      await queueService.create(newQueue);
       _showSnackBar('Fila adicionada com sucesso!');
       _fetchData();
     } catch (e) {
@@ -84,7 +84,7 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
     String? token = await AuthStorageService.getToken();
 
     try {
-      await queueService.delete(queueId.toString(), token!);
+      await queueService.delete(queueId.toString());
       _showSnackBar('Fila removida!');
       _fetchData();
     } catch (e) {
@@ -92,7 +92,7 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
     }
   }
 
-  Future<void> _showQueueUsers(int queueId) async {
+  /*Future<void> _showQueueUsers(int queueId) async {
     final queueService = Provider.of<QueueService>(context, listen: false);
     String? token = await AuthStorageService.getToken();
 
@@ -118,7 +118,7 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
     } catch (e) {
       _showSnackBar('Erro ao carregar usuários: $e');
     }
-  }
+  }*/
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -179,10 +179,10 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.people),
-                                  onPressed: () => _showQueueUsers(queue.queueId!),
-                                ),
+                                //IconButton(
+                                  //icon: const Icon(Icons.people),
+                                  //onPressed: () => _showQueueUsers(queue.queueId!),
+                                //),
                                 IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.red),
                                   onPressed: () => _removeQueue(queue.queueId!),
