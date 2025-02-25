@@ -61,4 +61,22 @@ class UserService {
       throw Exception('Failed to delete user');
     }
   }
+
+  Future<User> promoteUser(int id) async {
+    final response = await apiService.put('users/promote/$id', {});
+    if (response.statusCode == 200) {
+      return User.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to promote user');
+    }
+  }
+
+  Future<User> demoteUser(int id) async {
+    final response = await apiService.put('users/demote/$id', {});
+    if (response.statusCode == 200) {
+      return User.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to demote user');
+    }
+  }
 }

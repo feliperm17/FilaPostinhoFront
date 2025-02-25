@@ -5,7 +5,7 @@ import 'screens/home_page.dart';
 import 'screens/auth/profile_screen.dart';
 import 'screens/specialty/specialty_management_screen.dart';
 import 'screens/queue/queue_management_screen.dart';
-import 'screens/user/user_management_screnn.dart';
+import 'screens/user/user_management_screen.dart';
 import 'screens/auth/admin_home_page.dart';
 import 'core/theme/colors.dart';
 import 'services/specialty_service.dart';
