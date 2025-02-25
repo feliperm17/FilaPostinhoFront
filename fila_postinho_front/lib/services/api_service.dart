@@ -43,7 +43,12 @@ class ApiService {
   }
 
   Future<http.Response> delete(String endpoint) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$endpoint'));
+    final response = await http.delete(Uri.parse('$baseUrl/$endpoint'),
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$jwtToken',
+        },
+    );
     return response;
   }
 }

@@ -49,7 +49,7 @@ class AdminHome extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _navigateToManageSpecialties(context);
+                  Navigator.of(context).pushNamed('/manage_specialties');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.background,

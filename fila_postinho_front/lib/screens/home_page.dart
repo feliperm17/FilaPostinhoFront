@@ -52,26 +52,26 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<void> _selectDate(BuildContext context) async{
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(), 
+      firstDate: DateTime.now(),
       lastDate: DateTime(DateTime.now().year + 1),
-      selectableDayPredicate: (DateTime date){
+      selectableDayPredicate: (DateTime date) {
         //Falta Implementar
         return _isDateValidForSpecialty(date);
       },
     );
 
-    if(picked != null && picked != selectedDate) {
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
     }
   }
 
-  bool _isDateValidForSpecialty(DateTime date){
+  bool _isDateValidForSpecialty(DateTime date) {
     //Falta implementar
     //Precisa adicionar a data no modelo
     return true;
@@ -254,64 +254,38 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _enterQueue(BuildContext context) async {
-  if (selectedSpecialty == null) {
-    _showSnackBar(context, 'Selecione uma especialidade');
-    return;
-  }
-
-  final queueService = Provider.of<QueueService>(context, listen: false);
-  Specialty selected = selectedSpecialty!;
-
-  try {
-    Queue? existingQueue;
-    for (var q in queues) {
-      if (q.specialty == selected.specialtyId) {
-        existingQueue = q;
-        break;
-      }
+    if (selectedSpecialty == null) {
+      _showSnackBar(context, 'Selecione uma especialidade');
+      return;
     }
 
-    Queue queueEntry;
+    final queueService = Provider.of<QueueService>(context, listen: false);
+    final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
+    Specialty selected = selectedSpecialty!;
 
-    if (existingQueue != null) {
-      // Update existing queue
-      final updatedQueue = Queue(
-        queueId: existingQueue.queueId,
-        specialty: existingQueue.specialty,
-        //queueDt: selecteDate!,
-        queueDt: existingQueue.queueDt,
-        positionNr: existingQueue.positionNr,
-        queueSize: existingQueue.queueSize + 1,
-      );
-      queueEntry = await queueService.update(existingQueue.queueId.toString(), updatedQueue, token);
-    } else {
-      // Create new queue
-      final newQueue = Queue(
-        queueId: null,
-        specialty: selected.specialtyId!,
-        queueDt: DateTime.now(),
-        positionNr: 0, // Backend should initialize current position
-        queueSize: 1,
-      );
-      queueEntry = await queueService.create(newQueue, token);
-    }
+    try {
+      int queueId;
+      Queue queueEntry;
+      int userPosition;
+      Specialty specialty;
+      queueId = await queueService.join(selected);
+      queueEntry = await queueService.findById(queueId, 'token');
+      userPosition = await queueService.getPosition(queueId, 'token');
+      specialty = await specialtyService.findById('${queueEntry.specialty}','token');
 
-    // Navigate to QueueInfoScreen with dynamic data
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => QueueInfoScreen(
-          patientName: currentUser?.name ?? "Nome do Paciente",
-          currentTicket: queueEntry.queueSize,
-          currentPosition: queueEntry.positionNr,
-          estimatedTime: (queueEntry.queueSize - queueEntry.positionNr) * 10,
-          toggleTheme: widget.toggleTheme,
-          specialtyName: selected.specialtyName,
+      // Navigate to QueueInfoScreen with dynamic data
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => QueueInfoScreen(
+            patientName: currentUser?.name ?? "Nome do Paciente",
+            currentTicket: userPosition,
+            estimatedTime: userPosition * specialty.estimatedTime,
+            toggleTheme: widget.toggleTheme,
+            specialtyName: selected.specialtyName,
+          ),
         ),
-      ),
-    );
-
-    // Refresh the queues list
-    await _fetchQueues();
+      );
     } catch (e) {
       _showSnackBar(context, 'Erro ao entrar na fila: $e');
     }
