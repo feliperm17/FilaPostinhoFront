@@ -85,6 +85,24 @@ class AdminHome extends StatelessWidget {
                 child: const Text('Gerenciar Filas',
                     style: TextStyle(fontSize: 18)),
               ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/manage_users');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.background,
+                  foregroundColor: AppColors.primary,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                    vertical: 15,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text('Gerenciar Usuários', style: TextStyle(fontSize: 18)),
+              ),
             ],
           ),
         ),

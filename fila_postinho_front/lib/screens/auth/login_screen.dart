@@ -265,6 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   .pushNamedAndRemoveUntil('/admin/home', (_) => true);
             }
           } else {
+            print('Deu Erro');
             String errorMessage = 'Erro ao realizar login';
             if (response['message'] != null) {
               switch (response['message']) {
@@ -286,6 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         }
       } catch (e) {
+        print('Erro: $e');
         if (mounted) {
           _showSnackBar(
             'Erro no Sistema',

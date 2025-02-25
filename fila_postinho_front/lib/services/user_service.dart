@@ -20,6 +20,7 @@ class UserService {
   Future<User> login(String email, String password) async {
     final response = await apiService.post('auth/login', {'email': email, 'password': password});
     if (response.statusCode == 200) {
+      print(response.body);
       return User.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to login');
@@ -36,7 +37,7 @@ class UserService {
     }
   }
 
-  Future<User> findUserById(String id, String token_) async {
+  Future<User> findUserById(int id, String token_) async {
     final response = await apiService.get('users/$id', token_);
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body));
@@ -45,7 +46,7 @@ class UserService {
     }
   }
 
-  Future<User> updateUser(String id, User user) async {
+  Future<User> updateUser(int id, User user) async {
     final response = await apiService.put('users/$id', user.toJson());
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body));
@@ -54,10 +55,28 @@ class UserService {
     }
   }
 
-  Future<void> deleteUser(String id) async {
+  Future<void> deleteUser(int id) async {
     final response = await apiService.delete('users/$id');
     if (response.statusCode != 200) {
       throw Exception('Failed to delete user');
+    }
+  }
+
+  Future<User> promoteUser(int id) async {
+    final response = await apiService.put('users/promote/$id', {});
+    if (response.statusCode == 200) {
+      return User.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to promote user');
+    }
+  }
+
+  Future<User> demoteUser(int id) async {
+    final response = await apiService.put('users/demote/$id', {});
+    if (response.statusCode == 200) {
+      return User.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to demote user');
     }
   }
 }

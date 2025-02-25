@@ -1,5 +1,5 @@
 class User {
-  final int? id;
+  final int id;
   final String name;
   final String cpf;
   final String email;
@@ -8,7 +8,7 @@ class User {
   final bool isAdmin;
 
   User({
-    this.id,
+    required this.id,
     required this.name,
     required this.cpf,
     required this.email,
@@ -29,7 +29,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
+      id: json['account_id'],
       name: json['username'],
       cpf: json['cpf'],
       email: json['email'],
