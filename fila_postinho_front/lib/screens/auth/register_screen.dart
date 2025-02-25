@@ -8,7 +8,6 @@ import '../../utils/validators.dart';
 import 'package:fila_postinho_front/services/auth_service.dart';
 import 'package:fila_postinho_front/screens/auth/login_screen.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:fila_postinho_front/services/cep_service.dart';
 import 'package:fila_postinho_front/widgets/theme_toggle_button.dart';
 import 'package:fila_postinho_front/widgets/background_gradient.dart';
 import 'package:fila_postinho_front/core/constants/responsive_breakpoints.dart';
@@ -35,16 +34,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _cpfController = TextEditingController();
   final _authService = AuthService();
   bool _isLoading = false;
-  final _cepController = TextEditingController();
-  final _streetController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _neighborhoodController = TextEditingController();
-  final _stateController = TextEditingController();
   final _phoneController = TextEditingController();
   final _birthDateController = TextEditingController();
-  final _countryController = TextEditingController();
-  final _numberController = TextEditingController();
-  final _complementController = TextEditingController();
 
   // Formatadores de máscara
   final _cpfMask = MaskTextInputFormatter(
@@ -52,7 +43,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-  // Outros formatadores que podem ser úteis:
   final _phoneMask = MaskTextInputFormatter(
     mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -60,11 +50,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final _dateMask = MaskTextInputFormatter(
     mask: '##/##/####',
-    filter: {"#": RegExp(r'[0-9]')},
-  );
-
-  final _cepMask = MaskTextInputFormatter(
-    mask: '#####-###',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
@@ -134,7 +119,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     keyboardType: TextInputType.datetime,
                     validator: Validators.validateBirthDate,
                   ),
-                  // Continue o padrão para os outros campos
                   const SizedBox(height: 24),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -147,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Icons.email,
                           validator: Validators.validateEmail,
                           onChanged: (value) {
-                            setState(() {}); // Para atualizar o indicador
+                            setState(() {});
                           },
                         ),
                       ),
@@ -159,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         obscureText: true,
                         validator: Validators.validatePassword,
                         onChanged: (value) {
-                          setState(() {}); // Para atualizar o indicador
+                          setState(() {});
                         },
                       ),
                       const SizedBox(height: 8),
@@ -176,7 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _passwordController.text,
                         ),
                         onChanged: (value) {
-                          setState(() {}); // Para atualizar o indicador
+                          setState(() {});
                         },
                       ),
                       const SizedBox(height: 8),
@@ -184,35 +168,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _confirmPasswordController.text),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Endereço'),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    'CEP',
-                    _cepController,
-                    Icons.location_on,
-                    mask: [_cepMask],
-                    keyboardType: TextInputType.number,
-                    validator: Validators.validateCEP,
-                    onChanged: (value) {
-                      if (value.length == 9) _searchCep();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTextField('Rua', _streetController, Icons.location_on),
-                  const SizedBox(height: 16),
-                  _buildTextField('Número', _numberController, Icons.numbers),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                      'Complemento', _complementController, Icons.house),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                      'Bairro', _neighborhoodController, Icons.location_city),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                      'Cidade', _cityController, Icons.location_city),
-                  const SizedBox(height: 16),
-                  _buildTextField('Estado', _stateController, Icons.map),
                   const SizedBox(height: 24),
                   CustomButton(
                     text: 'Cadastrar',
@@ -289,25 +244,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  Future<void> _searchCep() async {
-    final cep = _cepController.text;
-    if (cep.length < 8) return;
-
-    setState(() => _isLoading = true);
-    try {
-      final address = await CepService.fetchAddress(cep);
-      if (address != null) {
-        _streetController.text = address['street'] ?? '';
-        _neighborhoodController.text = address['neighborhood'] ?? '';
-        _cityController.text = address['city'] ?? '';
-        _stateController.text = address['state'] ?? '';
-        _countryController.text = address['country'] ?? '';
-      }
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
   void _showSnackBar(String title, String message, bool isSuccess) {
     if (!mounted) return;
 
@@ -350,16 +286,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _cepController.dispose();
-    _streetController.dispose();
-    _cityController.dispose();
-    _neighborhoodController.dispose();
-    _stateController.dispose();
     _phoneController.dispose();
     _birthDateController.dispose();
-    _countryController.dispose();
-    _numberController.dispose();
-    _complementController.dispose();
     super.dispose();
   }
 

@@ -6,6 +6,7 @@ import 'package:fila_postinho_front/widgets/background_gradient.dart';
 import 'package:fila_postinho_front/services/specialty_service.dart';
 import 'package:fila_postinho_front/models/specialty_model.dart';
 import 'package:fila_postinho_front/services/auth_storage_service.dart';
+import 'package:fila_postinho_front/screens/auth/profile_screen.dart';
 
 class SpecialtyManagementScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -219,6 +220,16 @@ class SpecialtyManagementScreenState extends State<SpecialtyManagementScreen> {
         appBar: AppBar(
           title: const Text('Gerenciamento de Especialidades'),
           actions: [
+            IconButton( // Ícone do perfil adicionado aqui
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(toggleTheme: widget.toggleTheme),
+                  ),
+                );
+              },
+            ),
             ThemeToggleButton(
               onPressed: widget.toggleTheme,
               isDark: Theme.of(context).brightness == Brightness.dark,

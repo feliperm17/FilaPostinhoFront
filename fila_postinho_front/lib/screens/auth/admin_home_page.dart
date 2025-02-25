@@ -68,7 +68,8 @@ class AdminHome extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _navigateToManageQueues(context);
+                  //_navigateToManageQueues(context);
+                  Navigator.pushNamed(context, '/manage_queue');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.background,

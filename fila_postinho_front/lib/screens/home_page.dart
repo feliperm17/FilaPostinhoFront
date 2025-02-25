@@ -258,17 +258,24 @@ class _HomePageState extends State<HomePage> {
       _showSnackBar(context, 'Selecione uma especialidade');
       return;
     }
+    if (selectedSpecialty == null) {
+      _showSnackBar(context, 'Selecione uma especialidade');
+      return;
+    }
 
     final queueService = Provider.of<QueueService>(context, listen: false);
+    final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
     Specialty selected = selectedSpecialty!;
 
     try {
       int queueId;
       Queue queueEntry;
       int userPosition;
+      Specialty specialty;
       queueId = await queueService.join(selected);
       queueEntry = await queueService.findById(queueId, 'token');
       userPosition = await queueService.getPosition(queueId, 'token');
+      specialty = await specialtyService.findById('${queueEntry.specialty}','token');
 
       // Navigate to QueueInfoScreen with dynamic data
       // ignore: use_build_context_synchronously
@@ -277,7 +284,7 @@ class _HomePageState extends State<HomePage> {
           builder: (context) => QueueInfoScreen(
             patientName: currentUser?.name ?? "Nome do Paciente",
             currentTicket: userPosition,
-            estimatedTime: (queueEntry.queueSize - queueEntry.positionNr) * 10,
+            estimatedTime: userPosition * specialty.estimatedTime,
             toggleTheme: widget.toggleTheme,
             specialtyName: selected.specialtyName,
           ),

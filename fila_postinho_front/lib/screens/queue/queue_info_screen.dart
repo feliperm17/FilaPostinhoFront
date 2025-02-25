@@ -34,7 +34,7 @@ class QueueInfoScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Olá Sr(a). $patientName, bem vindo(a) ao Posto de Saúde aaaaaaaaa, você está na fila para:',
+              'Olá Sr(a). $patientName, bem vindo(a) ao Posto de Saúde, você está na fila para:',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),

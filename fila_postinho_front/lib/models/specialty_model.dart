@@ -7,9 +7,21 @@ class Specialty {
   Specialty({
     this.specialtyId,
     required this.specialtyName,
-    this.availableDays = const [],
-    required this.estimatedTime
+    required this.availableDays,
+    required this.estimatedTime,
   });
+
+  // Add equality checks
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Specialty &&
+        other.specialtyId == specialtyId &&
+        other.specialtyName == specialtyName;
+  }
+
+  @override
+  int get hashCode => specialtyId.hashCode ^ specialtyName.hashCode;
 
   factory Specialty.fromJson(Map<String, dynamic> json) {
     return Specialty(

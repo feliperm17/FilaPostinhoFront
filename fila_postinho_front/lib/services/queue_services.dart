@@ -29,7 +29,7 @@ class QueueService {
   }
 
   Future<Queue> findById(int id, String token_) async {
-    final response = await apiService.get('queue/$id');
+    final response = await apiService.get('queue/$id', token_);
     if (response.statusCode == 200) {
       return Queue.fromJson(jsonDecode(response.body));
     } else {
@@ -64,7 +64,7 @@ class QueueService {
   }
 
   Future<int> getPosition(int queueId, String token_) async {
-    final response = await apiService.get('queue/$queueId/position');
+    final response = await apiService.get('queue/$queueId/position', token_);
     if (response.statusCode == 200) {
       Map<String, dynamic> json = jsonDecode(response.body);
       return int.parse(json['position']);
