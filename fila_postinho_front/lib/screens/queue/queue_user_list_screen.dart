@@ -55,6 +55,7 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
       if (context.mounted) {
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: const Text("Próximo Usuário"),
             content: nextUser != null
@@ -73,6 +74,7 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
               TextButton(
                 onPressed: () {
                   queueService.skipQueue(widget.queueId);
+                  _loadUsers();
                   Navigator.pop(context);
                 },
                 child: const Text("Pular"),
@@ -81,6 +83,7 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
               ElevatedButton(
                 onPressed: () {
                   queueService.confirmQueue(widget.queueId);
+                  _loadUsers();
                   Navigator.pop(context);
                 },
                 child: const Text("Confirmar"),
