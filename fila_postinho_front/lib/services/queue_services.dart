@@ -74,9 +74,17 @@ class QueueService {
     }
   }
 
+  Future<QueueItem> getOtherPosition(int id) async {
+    final response = await apiService.get('queue/$id/position', '');
+    if (response.statusCode == 200) {
+      return QueueItem.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load queue');
+    }
+  }
+
   Future<String> leaveQueue(int queueId) async {
-    Map<String, dynamic> placeholder = "a: b" as Map<String, dynamic>;
-    final response = await apiService.post('queue/$queueId/leave', placeholder);
+    final response = await apiService.postNoBody('queue/$queueId/leave');
     if (response.statusCode == 200) {
       return response.body;
     } else {
@@ -89,6 +97,18 @@ class QueueService {
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data.map((json) => User.fromJson(json)).toList();
+    } else {
+      throw Exception('Erro ao buscar usuários da fila');
+    }
+  }
+
+  Future<QueueItemAccount> advanceQueue(int queueId) async {
+    final response = await apiService.postNoBody('queue/$queueId/next');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> current = data['current'];
+      QueueItemAccount item = QueueItemAccount.fromJson(current);
+      return item;
     } else {
       throw Exception('Erro ao buscar usuários da fila');
     }

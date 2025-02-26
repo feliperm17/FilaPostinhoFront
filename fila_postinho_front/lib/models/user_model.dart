@@ -29,12 +29,12 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['account_id'],
-      name: json['username'],
-      cpf: json['cpf'],
-      email: json['email'],
-      number: json['phone_nr'],
-      isAdmin: json['is_admin'],
+      id: json['account_id'] ?? 0, // Evita erro se o campo estiver ausente
+      name: json['username'] ?? 'Desconhecido', // Usa um valor padrão
+      cpf: json['cpf'] ?? '',
+      email: json['email'] ?? '',
+      number: json['phone_nr'] ?? '',
+      isAdmin: json['is_admin'] ?? false,
     );
   }
 }

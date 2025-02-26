@@ -4,8 +4,10 @@ import '../../services/queue_services.dart';
 import '../../models/queue_model.dart';
 import '../../services/specialty_service.dart';
 import '../../models/specialty_model.dart';
+import 'queue_user_list_screen.dart';
 import '../../services/auth_storage_service.dart';
 import '../../models/user_model.dart';
+import 'package:intl/intl.dart';
 
 class QueueManagementScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -31,18 +33,20 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
   Future<void> _loadQueues() async {
     String? token = await AuthStorageService.getToken();
 
-    if (token == null || token.isEmpty) { 
+    if (token == null || token.isEmpty) {
       _showSnackBar('Erro: Token inválido');
       return;
     }
 
     try {
       final queues = await _queueService.findAll(token);
-      final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
+      final specialtyService =
+          Provider.of<SpecialtyService>(context, listen: false);
       final specialties = await specialtyService.findAll(token);
 
       Map<int, String> specialtyMap = {
-        for (var specialty in specialties) specialty.specialtyId!: specialty.specialtyName
+        for (var specialty in specialties)
+          specialty.specialtyId!: specialty.specialtyName
       };
 
       setState(() {
@@ -53,7 +57,8 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
             queueDt: queue.queueDt,
             positionNr: queue.positionNr,
             queueSize: queue.queueSize,
-            specialtyName: specialtyMap[queue.specialty] ?? 'Especialidade Desconhecida',
+            specialtyName:
+                specialtyMap[queue.specialty] ?? 'Especialidade Desconhecida',
           );
         }).toList();
         _isLoading = false;
@@ -79,7 +84,8 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
     if (token == null) return;
 
     try {
-      final users = await _queueService.getQueueUsers(queueId.toString(), token);
+      final users =
+          await _queueService.getQueueUsers(queueId.toString(), token);
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -112,7 +118,7 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
     if (token == null) return;
 
     try {
-      await _queueService.removeUser(queueId.toString(), userId.toString(), token);
+      //await _queueService.removeUser(queueId.toString(), userId.toString(), token);
       _showSnackBar('Usuário removido da fila!');
       _showQueueUsers(queueId);
     } catch (e) {
@@ -145,27 +151,31 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
               itemBuilder: (context, index) {
                 final queue = _queues[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 4,
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    title: Text('Fila: ${queue.specialtyName ?? "Especialidade Desconhecida"} - ${queue.queueDt.toLocal()}'),
-                    subtitle: Text('Tamanho da Fila: ${queue.queueSize} pessoas'),
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    title: Text(
+                        'Fila: ${queue.specialtyName ?? "Especialidade Desconhecida"} - ${DateFormat('dd/MM/yyyy').format(queue.queueDt)}'),
+                    subtitle:
+                        Text('Tamanho da Fila: ${queue.queueSize} pessoas'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: const Icon(Icons.people),
-                          tooltip: 'Gerenciar usuários na fila',
-                          onPressed: () => _showQueueUsers(queue.queueId!),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.redAccent),
-                          tooltip: 'Remover fila',
-                          onPressed: () => _removeQueue(queue.queueId!),
+                          onPressed: () {
+                            final queueId = queue.queueId;
+                            Navigator.of(context).pushNamed(
+                              '/queue_users',
+                              arguments: queueId,
+                            );
+                          },
                         ),
                       ],
                     ),
