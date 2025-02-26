@@ -118,7 +118,6 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
     if (token == null) return;
 
     try {
-      //await _queueService.removeUser(queueId.toString(), userId.toString(), token);
       _showSnackBar('Usuário removido da fila!');
       _showQueueUsers(queueId);
     } catch (e) {
@@ -157,18 +156,23 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 4,
+                  color: Colors.blue[400], // Azul médio igual à lista de usuários
                   child: ListTile(
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     title: Text(
-                        'Fila: ${queue.specialtyName ?? "Especialidade Desconhecida"} - ${DateFormat('dd/MM/yyyy').format(queue.queueDt)}'),
-                    subtitle:
-                        Text('Tamanho da Fila: ${queue.queueSize} pessoas'),
+                      'Fila: ${queue.specialtyName ?? "Especialidade Desconhecida"} - ${DateFormat('dd/MM/yyyy').format(queue.queueDt)}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      'Tamanho da Fila: ${queue.queueSize} pessoas',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.people),
+                          icon: const Icon(Icons.people, color: Colors.white),
                           onPressed: () {
                             final queueId = queue.queueId;
                             Navigator.of(context).pushNamed(
