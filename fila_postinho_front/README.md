@@ -1,16 +1,68 @@
-# fila_postinho_front
+# FilaPostinhoFront
 
-A new Flutter project.
+## Descrição
 
-## Getting Started
+O **FilaPostinhoFront** é um projeto frontend desenvolvido em Flutter, que se conecta ao backend do FilaPostinho para gerenciar filas de atendimento em ambientes de saúde. Este aplicativo permite que os usuários se registrem, façam login, e se inscrevam em filas, além de visualizar seu status e receber notificações.
 
-This project is a starting point for a Flutter application.
+## 🔧 Pré-requisitos
 
-A few resources to get you started if this is your first Flutter project:
+Antes de executar o projeto, certifique-se de que você possui os seguintes pré-requisitos instalados em sua máquina:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Flutter** (versão 2.0 ou superior)
+- **Dart** (versão 2.12 ou superior)
+- **Android Studio** ou **Visual Studio Code** (para desenvolvimento)
+- **Emulador Android** ou **dispositivo físico** para testes
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🚀 Funcionalidades
+
+- **Registro de Usuário**: Permite que novos usuários se registrem no sistema.
+- **Login de Usuário**: Autenticação de usuários existentes.
+- **Gerenciamento de Filas**: Inscrição em filas, visualização de status e posição na fila.
+- **Notificações**: Recebimento de notificações sobre o status da fila.
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Flutter**: Framework para desenvolvimento de aplicativos móveis.
+- **Dart**: Linguagem de programação utilizada pelo Flutter.
+- **HTTP**: Biblioteca para realizar requisições HTTP ao backend.
+- **Provider**: Gerenciamento de estado para o aplicativo.
+
+## 🏃 Instalação
+
+Para instalar e executar o projeto, siga os passos abaixo:
+
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/feliperm17/FilaPostinhoFront
+   cd FilaPostinhoFront
+   ```
+
+2. **Instale as dependências**:
+   ```bash
+   flutter pub get
+   ```
+
+3. **Inicie o emulador** ou conecte um dispositivo físico.
+
+4. **Execute o aplicativo**:
+   ```bash
+   flutter run
+   ```
+
+## Estrutura do Projeto
+
+- **lib/core**: Configurações da API e constantes.
+- **lib/models**: Modelos de dados utilizados no aplicativo.
+- **lib/services**: Serviços para comunicação com a API.
+- **lib/utils**: Utilitários e funções auxiliares.
+- **lib/main.dart**: Ponto de entrada do aplicativo.
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+```
