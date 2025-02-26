@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return BackgroundGradient(
-      child:  Scaffold(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -92,7 +92,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         if (!isSmallScreen) const SizedBox(height: 32),
                         const SizedBox(height: 24),
-                        // Added header here
                         Text(
                           'Fila Postinho Systems',
                           style: TextStyle(
@@ -147,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 24),
                         CustomButton(
-                          text: 'Entrar',
+                              text: 'Entrar',
                           onPressed: _login,
                           isLoading: _isLoading.value,
                         ),
@@ -184,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           },
         ),
-      )
+      ),
     );
   }
 
@@ -225,9 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading.value = true;
-      });
+      _isLoading.value = true;
 
       try {
         if (_rememberMe) {
@@ -254,9 +251,6 @@ class _LoginScreenState extends State<LoginScreen> {
               true,
             );
             currentUser = User.fromJson(response['user']);
-            setState(() {
-              _isLoading.value = false;
-            });
             if (currentUser!.isAdmin == false) {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/home', (_) => true);
@@ -265,7 +259,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   .pushNamedAndRemoveUntil('/admin/home', (_) => true);
             }
           } else {
-            print('Deu Erro');
             String errorMessage = 'Erro ao realizar login';
             if (response['message'] != null) {
               switch (response['message']) {
@@ -283,18 +276,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   errorMessage = response['message'];
               }
             }
+            _isLoading.value = false;
             _showSnackBar('Erro no Login', errorMessage, false);
           }
         }
       } catch (e) {
-        print('Erro: $e');
-        if (mounted) {
-          _showSnackBar(
-            'Erro no Sistema',
-            'Ocorreu um erro ao tentar realizar o login. Tente novamente mais tarde.',
-            false,
-          );
-        }
+        _showSnackBar(
+          'Erro no Sistema',
+          'Ocorreu um erro ao tentar realizar o login. Tente novamente mais tarde.',
+          false,
+        );
       } finally {
         _isLoading.value = false;
       }
