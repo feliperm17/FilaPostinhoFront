@@ -44,6 +44,63 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
   Future<void> _advanceQueue() async {
     final queueService = Provider.of<QueueService>(context, listen: false);
     final userService = Provider.of<UserService>(context, listen: false);
+
+    try {
+      final QueueItemAccount item =
+          await queueService.advanceQueue(widget.queueId);
+      final User? nextUser = item.account != null
+          ? await userService.findUserById(item.account!, ' ')
+          : null;
+
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Próximo Usuário"),
+            content: nextUser != null
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Nome: ${nextUser.name}"),
+                      Text("Email: ${nextUser.email}"),
+                      Text("Telefone: ${nextUser.number}"),
+                    ],
+                  )
+                : const Text("Nenhum usuário na fila."),
+            actions: [
+              // Botão Pular
+              TextButton(
+                onPressed: () {
+                  queueService.skipQueue(widget.queueId);
+                  Navigator.pop(context);
+                },
+                child: const Text("Pular"),
+              ),
+              // Botão Confirmar
+              ElevatedButton(
+                onPressed: () {
+                  queueService.confirmQueue(widget.queueId);
+                  Navigator.pop(context);
+                },
+                child: const Text("Confirmar"),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao avançar fila: $e')),
+        );
+      }
+    }
+  }
+
+  /*Future<void> _advanceQueue() async {
+    final queueService = Provider.of<QueueService>(context, listen: false);
+    final userService = Provider.of<UserService>(context, listen: false);
     try {
       final QueueItemAccount item =
           await queueService.advanceQueue(widget.queueId);
@@ -80,7 +137,7 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
     } catch (e) {
       _showSnackBar('Erro ao avançar fila: $e');
     }
-  }
+  }*/
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
