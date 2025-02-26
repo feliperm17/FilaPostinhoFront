@@ -98,47 +98,6 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
     }
   }
 
-  /*Future<void> _advanceQueue() async {
-    final queueService = Provider.of<QueueService>(context, listen: false);
-    final userService = Provider.of<UserService>(context, listen: false);
-    try {
-      final QueueItemAccount item =
-          await queueService.advanceQueue(widget.queueId);
-      final User nextUser = await userService.findUserById(item.account!, ' ');
-      // Exibe as informações do usuário chamado em um diálogo.
-      if (item.account != null) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Próximo Usuário"),
-            content: nextUser != null
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Nome: ${nextUser.name}"),
-                      Text("Email: ${nextUser.email}"),
-                      Text("Telephone: ${nextUser.number}"),
-                    ],
-                  )
-                : const Text("Nenhum usuário na fila."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
-      }
-
-      _showSnackBar('Fila avançada com sucesso!');
-      await _loadUsers(); // Atualiza a lista de usuários.
-    } catch (e) {
-      _showSnackBar('Erro ao avançar fila: $e');
-    }
-  }*/
-
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -166,6 +125,7 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
                     itemCount: _users.length,
                     itemBuilder: (context, index) {
                       final user = _users[index];
+                      final position = index + 1;
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
@@ -173,11 +133,32 @@ class _QueueUsersScreenState extends State<QueueUsersScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 4,
+                        color: Colors.blue[400], // Azul de tom médio
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 16),
-                          title: Text(user.name),
-                          subtitle: Text(user.email),
+                          title: Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                  user.name,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "Posição na fila: $position",
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     },
