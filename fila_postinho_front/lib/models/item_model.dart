@@ -25,4 +25,14 @@ class QueueItem {
       estimatedTime: int.parse(json['estimated_wait'].toString()),
     );
   }
+  factory QueueItem.notOnQueue() {
+    return QueueItem(
+      queueId: 0,
+      specialtyId: 0,
+      specialty: '',
+      status: -1,
+      position: 0,
+      estimatedTime: 0,
+    );
+  }
 }

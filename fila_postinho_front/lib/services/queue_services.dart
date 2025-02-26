@@ -55,8 +55,8 @@ class QueueService {
   }
 
   Future<String> join(Specialty specialty) async {
-    final response = await apiService.post(
-        'queue/${specialty.specialtyId}/join', specialty.toJson());
+    final response =
+        await apiService.postNoBody('queue/${specialty.specialtyId}/join');
     if (response.statusCode == 201) {
       return response.body;
     } else {
@@ -69,13 +69,12 @@ class QueueService {
     if (response.statusCode == 200) {
       return QueueItem.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load queue');
+      return QueueItem.notOnQueue();
     }
   }
 
   Future<String> leaveQueue(int queueId) async {
-    Map<String, dynamic> placeholder = "a: b" as Map<String, dynamic>;
-    final response = await apiService.post('queue/$queueId/leave', placeholder);
+    final response = await apiService.postNoBody('queue/$queueId/leave');
     if (response.statusCode == 200) {
       return response.body;
     } else {

@@ -33,7 +33,8 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
 
   Future<void> _fetchData() async {
     final queueService = Provider.of<QueueService>(context, listen: false);
-    final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
+    final specialtyService =
+        Provider.of<SpecialtyService>(context, listen: false);
     String? token = await AuthStorageService.getToken();
 
     if (token != null) {
@@ -62,7 +63,7 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
 
     final queueService = Provider.of<QueueService>(context, listen: false);
     String? token = await AuthStorageService.getToken();
-    
+
     try {
       final newQueue = Queue(
         queueId: null,
@@ -148,15 +149,19 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
                     DropdownButton<Specialty>(
                       hint: const Text('Selecione uma Especialidade'),
                       value: selectedSpecialty,
-                      onChanged: (value) => setState(() => selectedSpecialty = value),
-                      items: specialties.map((s) => DropdownMenuItem(
-                        value: s,
-                        child: Text(s.specialtyName),
-                      )).toList(),
+                      onChanged: (value) =>
+                          setState(() => selectedSpecialty = value),
+                      items: specialties
+                          .map((s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s.specialtyName),
+                              ))
+                          .toList(),
                     ),
                     TextField(
                       controller: _queueDateController,
-                      decoration: const InputDecoration(labelText: 'Data da Fila (YYYY-MM-DD)'),
+                      decoration: const InputDecoration(
+                          labelText: 'Data da Fila (YYYY-MM-DD)'),
                     ),
                     ElevatedButton(
                       onPressed: _addQueue,
@@ -180,11 +185,12 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 //IconButton(
-                                  //icon: const Icon(Icons.people),
-                                  //onPressed: () => _showQueueUsers(queue.queueId!),
+                                //icon: const Icon(Icons.people),
+                                //onPressed: () => _showQueueUsers(queue.queueId!),
                                 //),
                                 IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
                                   onPressed: () => _removeQueue(queue.queueId!),
                                 ),
                               ],
