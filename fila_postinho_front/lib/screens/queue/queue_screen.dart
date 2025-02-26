@@ -36,7 +36,9 @@ class _QueueScreenState extends State<QueueScreen> {
       final queueService = Provider.of<QueueService>(context, listen: false);
 
       final response = await queueService.getPosition();
-
+      if (response?.status == -1) {
+        Navigator.of(context).pop();
+      }
       setState(() {
         _queueData = response;
         _isLoading = false;

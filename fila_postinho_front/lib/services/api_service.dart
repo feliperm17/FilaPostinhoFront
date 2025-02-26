@@ -35,7 +35,10 @@ class ApiService {
       'Content-Type': 'application/json',
       'Authorization': '$jwtToken',
     };
-    return await http.post(Uri.parse('$baseUrl/$endpoint'), headers: headers);
+    return await http.post(
+      Uri.parse('$baseUrl/$endpoint'),
+      headers: headers,
+    );
   }
 
   Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {

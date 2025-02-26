@@ -30,13 +30,19 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
     _loadQueues();
   }
 
-  Future<void> _loadQueues() async {
+  Future<void> _fetchData() async {
+    final queueService = Provider.of<QueueService>(context, listen: false);
+    final specialtyService =
+        Provider.of<SpecialtyService>(context, listen: false);
     String? token = await AuthStorageService.getToken();
 
     if (token == null || token.isEmpty) {
       _showSnackBar('Erro: Token inválido');
       return;
     }
+
+    final queueService = Provider.of<QueueService>(context, listen: false);
+    String? token = await AuthStorageService.getToken();
 
     try {
       final queues = await _queueService.findAll(token);
@@ -134,15 +140,79 @@ class _QueueManagementScreenState extends State<QueueManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gerenciar Filas'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadQueues,
-          ),
-        ],
+    return BackgroundGradient(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Gerenciamento de Filas'),
+          actions: [
+            ThemeToggleButton(
+              onPressed: widget.toggleTheme,
+              isDark: Theme.of(context).brightness == Brightness.dark,
+            ),
+          ],
+        ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    DropdownButton<Specialty>(
+                      hint: const Text('Selecione uma Especialidade'),
+                      value: selectedSpecialty,
+                      onChanged: (value) =>
+                          setState(() => selectedSpecialty = value),
+                      items: specialties
+                          .map((s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s.specialtyName),
+                              ))
+                          .toList(),
+                    ),
+                    TextField(
+                      controller: _queueDateController,
+                      decoration: const InputDecoration(
+                          labelText: 'Data da Fila (YYYY-MM-DD)'),
+                    ),
+                    ElevatedButton(
+                      onPressed: _addQueue,
+                      child: const Text('Adicionar Fila'),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: queues.length,
+                        itemBuilder: (context, index) {
+                          final queue = queues[index];
+                          return ListTile(
+                            title: Text('Fila ID: ${queue.queueId}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Text('Especialidade: ${queue.getSpecialtyName(specialties)}'),
+                                Text('Tamanho: ${queue.queueSize}'),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                //IconButton(
+                                //icon: const Icon(Icons.people),
+                                //onPressed: () => _showQueueUsers(queue.queueId!),
+                                //),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () => _removeQueue(queue.queueId!),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
