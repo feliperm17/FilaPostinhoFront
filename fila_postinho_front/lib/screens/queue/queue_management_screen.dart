@@ -4,10 +4,10 @@ import '../../services/queue_services.dart';
 import '../../models/queue_model.dart';
 import '../../services/specialty_service.dart';
 import '../../models/specialty_model.dart';
-import '../../widgets/theme_toggle_button.dart';
-import '../../widgets/background_gradient.dart';
+import 'queue_user_list_screen.dart';
 import '../../services/auth_storage_service.dart';
 import '../../models/user_model.dart';
+import 'package:intl/intl.dart';
 
 class QueueManagementScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -15,20 +15,19 @@ class QueueManagementScreen extends StatefulWidget {
   const QueueManagementScreen({super.key, required this.toggleTheme});
 
   @override
-  State<QueueManagementScreen> createState() => QueueManagementScreenState();
+  State<QueueManagementScreen> createState() => _QueueManagementScreenState();
 }
 
-class QueueManagementScreenState extends State<QueueManagementScreen> {
-  List<Queue> queues = [];
-  List<Specialty> specialties = [];
-  final TextEditingController _queueDateController = TextEditingController();
-  Specialty? selectedSpecialty;
-  bool isLoading = true;
+class _QueueManagementScreenState extends State<QueueManagementScreen> {
+  late QueueService _queueService;
+  List<Queue> _queues = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    _queueService = Provider.of<QueueService>(context, listen: false);
+    _loadQueues();
   }
 
   Future<void> _fetchData() async {
@@ -37,27 +36,8 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
         Provider.of<SpecialtyService>(context, listen: false);
     String? token = await AuthStorageService.getToken();
 
-    if (token != null) {
-      try {
-        final fetchedQueues = await queueService.findAll(token);
-        final fetchedSpecialties = await specialtyService.findAll(token);
-        setState(() {
-          queues = fetchedQueues;
-          specialties = fetchedSpecialties;
-          isLoading = false;
-        });
-      } catch (e) {
-        setState(() => isLoading = false);
-        _showSnackBar('Erro ao carregar dados: $e');
-      }
-    } else {
-      _showSnackBar('Erro: Token não encontrado');
-    }
-  }
-
-  Future<void> _addQueue() async {
-    if (selectedSpecialty == null || _queueDateController.text.isEmpty) {
-      _showSnackBar('Selecione uma especialidade e defina uma data.');
+    if (token == null || token.isEmpty) {
+      _showSnackBar('Erro: Token inválido');
       return;
     }
 
@@ -65,40 +45,53 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
     String? token = await AuthStorageService.getToken();
 
     try {
-      final newQueue = Queue(
-        queueId: null,
-        specialty: selectedSpecialty!.specialtyId!,
-        queueDt: DateTime.parse(_queueDateController.text),
-        positionNr: 0,
-        queueSize: 0,
-      );
-      await queueService.create(newQueue);
-      _showSnackBar('Fila adicionada com sucesso!');
-      _fetchData();
+      final queues = await _queueService.findAll(token);
+      final specialtyService =
+          Provider.of<SpecialtyService>(context, listen: false);
+      final specialties = await specialtyService.findAll(token);
+
+      Map<int, String> specialtyMap = {
+        for (var specialty in specialties)
+          specialty.specialtyId!: specialty.specialtyName
+      };
+
+      setState(() {
+        _queues = queues.map((queue) {
+          return Queue(
+            queueId: queue.queueId,
+            specialty: queue.specialty,
+            queueDt: queue.queueDt,
+            positionNr: queue.positionNr,
+            queueSize: queue.queueSize,
+            specialtyName:
+                specialtyMap[queue.specialty] ?? 'Especialidade Desconhecida',
+          );
+        }).toList();
+        _isLoading = false;
+      });
     } catch (e) {
-      _showSnackBar('Erro ao adicionar fila: $e');
+      setState(() => _isLoading = false);
+      _showSnackBar('Erro ao carregar filas: $e');
     }
   }
 
   Future<void> _removeQueue(int queueId) async {
-    final queueService = Provider.of<QueueService>(context, listen: false);
-    String? token = await AuthStorageService.getToken();
-
     try {
-      await queueService.delete(queueId.toString());
+      await _queueService.delete(queueId.toString());
       _showSnackBar('Fila removida!');
-      _fetchData();
+      _loadQueues();
     } catch (e) {
       _showSnackBar('Erro ao remover fila: $e');
     }
   }
 
-  /*Future<void> _showQueueUsers(int queueId) async {
-    final queueService = Provider.of<QueueService>(context, listen: false);
+  Future<void> _showQueueUsers(int queueId) async {
     String? token = await AuthStorageService.getToken();
+    if (token == null) return;
 
     try {
-      final users = await queueService.getQueueUsers(queueId.toString(), token!);
+      final users =
+          await _queueService.getQueueUsers(queueId.toString(), token);
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -111,6 +104,11 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
               itemBuilder: (ctx, i) => ListTile(
                 title: Text(users[i].name),
                 subtitle: Text(users[i].email),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.redAccent),
+                  tooltip: 'Remover usuário da fila',
+                  onPressed: () => _removeUserFromQueue(queueId, users[i].id),
+                ),
               ),
             ),
           ),
@@ -119,7 +117,20 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
     } catch (e) {
       _showSnackBar('Erro ao carregar usuários: $e');
     }
-  }*/
+  }
+
+  Future<void> _removeUserFromQueue(int queueId, int userId) async {
+    String? token = await AuthStorageService.getToken();
+    if (token == null) return;
+
+    try {
+      //await _queueService.removeUser(queueId.toString(), userId.toString(), token);
+      _showSnackBar('Usuário removido da fila!');
+      _showQueueUsers(queueId);
+    } catch (e) {
+      _showSnackBar('Erro ao remover usuário: $e');
+    }
+  }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -203,6 +214,45 @@ class QueueManagementScreenState extends State<QueueManagementScreen> {
                 ),
               ),
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: _queues.length,
+              itemBuilder: (context, index) {
+                final queue = _queues[index];
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    title: Text(
+                        'Fila: ${queue.specialtyName ?? "Especialidade Desconhecida"} - ${DateFormat('dd/MM/yyyy').format(queue.queueDt)}'),
+                    subtitle:
+                        Text('Tamanho da Fila: ${queue.queueSize} pessoas'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.people),
+                          onPressed: () {
+                            final queueId = queue.queueId;
+                            Navigator.of(context).pushNamed(
+                              '/queue_users',
+                              arguments: queueId,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

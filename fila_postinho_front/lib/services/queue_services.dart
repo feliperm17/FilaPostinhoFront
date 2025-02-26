@@ -4,6 +4,7 @@ import '../models/item_model.dart';
 import '../models/specialty_model.dart';
 import 'dart:convert';
 import 'api_service.dart';
+import '../models/user_model.dart';
 
 class QueueService {
   final ApiService apiService;
@@ -73,12 +74,43 @@ class QueueService {
     }
   }
 
+  Future<QueueItem> getOtherPosition(int id) async {
+    final response = await apiService.get('queue/$id/position', '');
+    if (response.statusCode == 200) {
+      return QueueItem.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load queue');
+    }
+  }
+
   Future<String> leaveQueue(int queueId) async {
     final response = await apiService.postNoBody('queue/$queueId/leave');
     if (response.statusCode == 200) {
       return response.body;
     } else {
       throw Exception('Failed to load queue');
+    }
+  }
+
+  Future<List<User>> getQueueUsers(String queueId, String token) async {
+    final response = await apiService.get('queue/$queueId/users', token);
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => User.fromJson(json)).toList();
+    } else {
+      throw Exception('Erro ao buscar usuários da fila');
+    }
+  }
+
+  Future<QueueItemAccount> advanceQueue(int queueId) async {
+    final response = await apiService.postNoBody('queue/$queueId/next');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> current = data['current'];
+      QueueItemAccount item = QueueItemAccount.fromJson(current);
+      return item;
+    } else {
+      throw Exception('Erro ao buscar usuários da fila');
     }
   }
 }

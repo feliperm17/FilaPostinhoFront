@@ -20,6 +20,7 @@ dependencies:
   provider: 6.1.2
   flutter_blue_plus: ^1.31.17
   cupertino_icons: ^1.0.8
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

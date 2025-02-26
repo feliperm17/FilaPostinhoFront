@@ -12,7 +12,9 @@ import 'core/theme/colors.dart';
 import 'services/specialty_service.dart';
 import 'services/api_service.dart';
 import 'services/auth_storage_service.dart';
-import 'services/queue_services.dart'; // Add this import
+import 'services/queue_services.dart';
+import 'services/user_service.dart';
+import 'screens/queue/queue_user_list_screen.dart';
 import 'utils/jwt_token.dart';
 
 void main() async {
@@ -33,6 +35,9 @@ void main() async {
         Provider<QueueService>(
           // Add QueueService provider
           create: (context) => QueueService(context.read<ApiService>()),
+        ),
+        Provider<UserService>(
+          create: (context) => UserService(context.read<ApiService>()),
         ),
       ],
       child: const MyApp(),
@@ -88,6 +93,10 @@ class MyAppState extends State<MyApp> {
         '/queue': (context) {
           final queueId = ModalRoute.of(context)!.settings.arguments as String;
           return QueueScreen(queueId: int.parse(queueId));
+        },
+        '/queue_users': (context) {
+          final queueId = ModalRoute.of(context)!.settings.arguments as int;
+          return QueueUsersScreen(queueId: queueId);
         },
         '/profile': (context) => ProfileScreen(toggleTheme: _toggleTheme),
         '/admin/home': (context) => AdminHome(toggleTheme: _toggleTheme),
