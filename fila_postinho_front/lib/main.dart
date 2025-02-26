@@ -5,6 +5,7 @@ import 'screens/home_page.dart';
 import 'screens/auth/profile_screen.dart';
 import 'screens/specialty/specialty_management_screen.dart';
 import 'screens/queue/queue_management_screen.dart';
+import 'screens/queue/queue_screen.dart';
 import 'screens/user/user_management_screen.dart';
 import 'screens/auth/admin_home_page.dart';
 import 'core/theme/colors.dart';
@@ -16,7 +17,7 @@ import 'utils/jwt_token.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load token from storage
   jwtToken = await AuthStorageService.getToken();
 
@@ -29,7 +30,8 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => SpecialtyService(context.read<ApiService>()),
         ),
-        Provider<QueueService>( // Add QueueService provider
+        Provider<QueueService>(
+          // Add QueueService provider
           create: (context) => QueueService(context.read<ApiService>()),
         ),
       ],
@@ -83,13 +85,17 @@ class MyAppState extends State<MyApp> {
         '/register': (context) => LoginScreen(toggleTheme: _toggleTheme),
         '/login': (context) => LoginScreen(toggleTheme: _toggleTheme),
         '/home': (context) => HomePage(toggleTheme: _toggleTheme),
+        '/queue': (context) {
+          final queueId = ModalRoute.of(context)!.settings.arguments as String;
+          return QueueScreen(queueId: int.parse(queueId));
+        },
         '/profile': (context) => ProfileScreen(toggleTheme: _toggleTheme),
         '/admin/home': (context) => AdminHome(toggleTheme: _toggleTheme),
         '/manage_queue': (context) =>
             QueueManagementScreen(toggleTheme: _toggleTheme),
         '/manage_specialties': (context) =>
             SpecialtyManagementScreen(toggleTheme: _toggleTheme),
-        '/manage_users': (context) => 
+        '/manage_users': (context) =>
             UserManagementScreen(toggleTheme: _toggleTheme),
       },
     );

@@ -1,5 +1,6 @@
 //import 'package:http/http.dart' as http;
 import '../models/queue_model.dart';
+import '../models/item_model.dart';
 import '../models/specialty_model.dart';
 import 'dart:convert';
 import 'api_service.dart';
@@ -53,21 +54,30 @@ class QueueService {
     }
   }
 
-  Future<int> join(Specialty specialty) async {
+  Future<String> join(Specialty specialty) async {
     final response = await apiService.post(
         'queue/${specialty.specialtyId}/join', specialty.toJson());
     if (response.statusCode == 201) {
-      return int.parse(response.body);
+      return response.body;
     } else {
       throw Exception('Failed to create queue');
     }
   }
 
-  Future<int> getPosition(int queueId, String token_) async {
-    final response = await apiService.get('queue/$queueId/position', token_);
+  Future<QueueItem> getPosition() async {
+    final response = await apiService.get('queue/position', '');
     if (response.statusCode == 200) {
-      Map<String, dynamic> json = jsonDecode(response.body);
-      return int.parse(json['position']);
+      return QueueItem.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load queue');
+    }
+  }
+
+  Future<String> leaveQueue(int queueId) async {
+    Map<String, dynamic> placeholder = "a: b" as Map<String, dynamic>;
+    final response = await apiService.post('queue/$queueId/leave', placeholder);
+    if (response.statusCode == 200) {
+      return response.body;
     } else {
       throw Exception('Failed to load queue');
     }

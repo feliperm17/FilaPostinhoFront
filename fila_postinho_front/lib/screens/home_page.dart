@@ -104,22 +104,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _fetchQueues() async {
-    final queueService = Provider.of<QueueService>(context, listen: false);
-    try {
-      final fetchedQueues = await queueService.findAll(token);
-      if (mounted) {
-        setState(() {
-          queues = fetchedQueues;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar(context, 'Failed to load queues: $e');
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -210,22 +194,6 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
-                  ),
-                  Text(
-                    selectedDate != null
-                        ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
-                        : "Selecione a data",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   _enterQueue(context);
@@ -264,32 +232,13 @@ class _HomePageState extends State<HomePage> {
     }
 
     final queueService = Provider.of<QueueService>(context, listen: false);
-    final specialtyService = Provider.of<SpecialtyService>(context, listen: false);
     Specialty selected = selectedSpecialty!;
 
     try {
-      int queueId;
-      Queue queueEntry;
-      int userPosition;
-      Specialty specialty;
+      String queueId;
       queueId = await queueService.join(selected);
-      queueEntry = await queueService.findById(queueId, 'token');
-      userPosition = await queueService.getPosition(queueId, 'token');
-      specialty = await specialtyService.findById('${queueEntry.specialty}','token');
 
-      // Navigate to QueueInfoScreen with dynamic data
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => QueueInfoScreen(
-            patientName: currentUser?.name ?? "Nome do Paciente",
-            currentTicket: userPosition,
-            estimatedTime: userPosition * specialty.estimatedTime,
-            toggleTheme: widget.toggleTheme,
-            specialtyName: selected.specialtyName,
-          ),
-        ),
-      );
+      Navigator.of(context).pushNamed('/queue', arguments: queueId);
     } catch (e) {
       _showSnackBar(context, 'Erro ao entrar na fila: $e');
     }
