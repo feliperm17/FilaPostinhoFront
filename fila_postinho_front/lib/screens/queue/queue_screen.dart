@@ -172,8 +172,6 @@ class _QueueScreenState extends State<QueueScreen> {
         children: [
           const Text('ATENDIMENTO EM ANDAMENTO',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          const Text('Por favor aguarde no local', textAlign: TextAlign.center),
         ],
       );
 

@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   void _startAutoRefresh() {
     _checkCurrentQueue();
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       _checkCurrentQueue();
     });
   }
@@ -172,9 +172,7 @@ class _HomePageState extends State<HomePage> {
             ] else ...[
               const SizedBox(height: 12),
               Text(
-                status == 1
-                    ? 'Por favor aguarde no local'
-                    : 'Aguarde orientação do atendente',
+                status == 1 ? '' : 'Aguarde orientação do atendente',
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontStyle: FontStyle.italic,

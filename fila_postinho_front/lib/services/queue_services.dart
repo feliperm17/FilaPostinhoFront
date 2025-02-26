@@ -113,4 +113,28 @@ class QueueService {
       throw Exception('Erro ao buscar usuários da fila');
     }
   }
+
+  Future<QueueItemAccount> skipQueue(int queueId) async {
+    final response = await apiService.postNoBody('queue/$queueId/skip');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> current = data['current'];
+      QueueItemAccount item = QueueItemAccount.fromJson(current);
+      return item;
+    } else {
+      throw Exception('Erro ao buscar usuários da fila');
+    }
+  }
+
+  Future<QueueItemAccount> confirmQueue(int queueId) async {
+    final response = await apiService.postNoBody('queue/$queueId/confirm');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> current = data['current'];
+      QueueItemAccount item = QueueItemAccount.fromJson(current);
+      return item;
+    } else {
+      throw Exception('Erro ao buscar usuários da fila');
+    }
+  }
 }
